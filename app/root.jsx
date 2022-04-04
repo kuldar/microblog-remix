@@ -17,7 +17,7 @@ export const links = () => {
 
 export const meta = () => ({
   charset: "utf-8",
-  title: "Remix Notes",
+  title: "Microblog",
   viewport: "width=device-width,initial-scale=1",
 });
 
@@ -29,12 +29,12 @@ export const loader = async ({ request }) => {
 
 export default function App() {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="min-h-screen">
       <head>
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
+      <body className="flex min-h-screen overflow-hidden text-gray-900 bg-white dark:bg-black dark:text-white">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

@@ -39,63 +39,46 @@ export default function NewNotePage() {
   }, [actionData]);
 
   return (
-    <Form
-      method="post"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        width: "100%",
-      }}
-    >
+    <Form method="post">
       <div>
-        <label className="flex flex-col w-full gap-1">
+        <label>
           <span>Title: </span>
           <input
             ref={titleRef}
             name="title"
-            className="flex-1 px-3 text-lg leading-loose border-2 border-blue-500 rounded-md"
             aria-invalid={actionData?.errors?.title ? true : undefined}
             aria-errormessage={
               actionData?.errors?.title ? "title-error" : undefined
             }
+            className="text-black"
           />
         </label>
         {actionData?.errors?.title && (
-          <div className="pt-1 text-red-700" id="title-error">
-            {actionData.errors.title}
-          </div>
+          <div id="title-error">{actionData.errors.title}</div>
         )}
       </div>
 
       <div>
-        <label className="flex flex-col w-full gap-1">
+        <label>
           <span>Body: </span>
           <textarea
             ref={bodyRef}
             name="body"
             rows={8}
-            className="flex-1 w-full px-3 py-2 text-lg leading-6 border-2 border-blue-500 rounded-md"
             aria-invalid={actionData?.errors?.body ? true : undefined}
             aria-errormessage={
               actionData?.errors?.body ? "body-error" : undefined
             }
+            className="text-black"
           />
         </label>
         {actionData?.errors?.body && (
-          <div className="pt-1 text-red-700" id="body-error">
-            {actionData.errors.body}
-          </div>
+          <div id="body-error">{actionData.errors.body}</div>
         )}
       </div>
 
-      <div className="text-right">
-        <button
-          type="submit"
-          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:bg-blue-400"
-        >
-          Save
-        </button>
+      <div>
+        <button type="submit">Save</button>
       </div>
     </Form>
   );
