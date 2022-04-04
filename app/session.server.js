@@ -1,7 +1,6 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
-import type { User } from "~/models/user.server";
 import { getUserById } from "~/models/user.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
@@ -20,18 +19,18 @@ export const sessionStorage = createCookieSessionStorage({
 
 const USER_SESSION_KEY = "userId";
 
-export async function getSession(request: Request) {
+export async function getSession(request) {
   const cookie = request.headers.get("Cookie");
   return sessionStorage.getSession(cookie);
 }
 
-export async function getUserId(request: Request): Promise<string | undefined> {
+export async function getUserId(request) {
   const session = await getSession(request);
   const userId = session.get(USER_SESSION_KEY);
   return userId;
 }
 
-export async function getUser(request: Request): Promise<null | User> {
+export async function getUser(request) {
   const userId = await getUserId(request);
   if (userId === undefined) return null;
 
@@ -42,9 +41,9 @@ export async function getUser(request: Request): Promise<null | User> {
 }
 
 export async function requireUserId(
-  request: Request,
-  redirectTo: string = new URL(request.url).pathname
-): Promise<string> {
+  request,
+  redirectTo = new URL(request.url).pathname
+) {
   const userId = await getUserId(request);
   if (!userId) {
     const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
@@ -53,7 +52,7 @@ export async function requireUserId(
   return userId;
 }
 
-export async function requireUser(request: Request) {
+export async function requireUser(request) {
   const userId = await requireUserId(request);
 
   const user = await getUserById(userId);
@@ -67,11 +66,6 @@ export async function createUserSession({
   userId,
   remember,
   redirectTo,
-}: {
-  request: Request;
-  userId: string;
-  remember: boolean;
-  redirectTo: string;
 }) {
   const session = await getSession(request);
   session.set(USER_SESSION_KEY, userId);
@@ -86,7 +80,7 @@ export async function createUserSession({
   });
 }
 
-export async function logout(request: Request) {
+export async function logout(request) {
   const session = await getSession(request);
   return redirect("/", {
     headers: {
