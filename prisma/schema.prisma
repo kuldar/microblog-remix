@@ -22,10 +22,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  password Password?
-  posts    Post[]
-  follower Follow[]  @relation("follower")
-  followed Follow[]  @relation("followed")
+  password   Password?
+  posts      Post[]
+  followers  Follow[]  @relation("followed")
+  followings Follow[]  @relation("follower")
 }
 
 model Follow {

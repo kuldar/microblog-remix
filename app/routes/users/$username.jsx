@@ -9,6 +9,7 @@ import {
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
+import { useOptionalUser } from "~/utils";
 import { getUserId, requireUserId } from "~/session.server";
 import {
   getUserByUsername,
@@ -16,7 +17,6 @@ import {
   followUser,
   unfollowUser,
 } from "~/models/user.server";
-import { useOptionalUser } from "~/utils";
 import {
   ArrowLeftIcon,
   LocationIcon,
@@ -24,6 +24,7 @@ import {
   CalendarIcon,
 } from "~/components/Icons";
 
+// Loader
 export const loader = async ({ request, params }) => {
   invariant(params.username, "username not found");
   const userId = await getUserId(request);
@@ -40,17 +41,21 @@ export const loader = async ({ request, params }) => {
   return json({ user, followed });
 };
 
+// Action
 export const action = async ({ request }) => {
   const userId = await requireUserId(request);
   const formData = await request.formData();
   const { _action, ...values } = Object.fromEntries(formData);
 
   if (_action === "follow") {
-    return await followUser(userId, values.userId);
+    return await followUser({ followerId: userId, followedId: values.userId });
   }
 
   if (_action === "unfollow") {
-    return await unfollowUser(userId, values.userId);
+    return await unfollowUser({
+      followerId: userId,
+      followedId: values.userId,
+    });
   }
 };
 
@@ -119,7 +124,7 @@ export default function UserPage() {
                       <button
                         name="_action"
                         value="unfollow"
-                        className="block px-4 py-2 font-bold text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
+                        className="block px-4 py-2 font-bold text-blue-500 transition-colors bg-transparent border border-blue-500 rounded-full hover:border-red-500 hover:bg-red-100/50 hover:text-red-500 dark:hover:bg-transparent"
                       >
                         Unfollow
                       </button>
@@ -203,13 +208,13 @@ export default function UserPage() {
           {/* Stats */}
           <div className="flex mb-4 space-x-4">
             <Link to="following" className="flex space-x-2 group">
-              <div className="font-bold">{data.user._count.follower}</div>
+              <div className="font-bold">{data.user._count.followings}</div>
               <div className="text-gray-500 group-hover:underline">
                 Following
               </div>
             </Link>
             <Link to="followers" className="flex space-x-2 group">
-              <div className="font-bold">{data.user._count.followed}</div>
+              <div className="font-bold">{data.user._count.followers}</div>
               <div className="text-gray-500 group-hover:underline">
                 Followers
               </div>

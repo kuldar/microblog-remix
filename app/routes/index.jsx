@@ -1,19 +1,32 @@
-import { Link } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
-import { useOptionalUser } from "~/utils";
+import { getAllPosts } from "~/models/post.server";
+import { getUserId } from "~/session.server";
+import Post from "~/components/Post";
+
+// Loader
+export const loader = async ({ request }) => {
+  const userId = await getUserId(request);
+  if (userId) return redirect("/posts");
+
+  const posts = await getAllPosts();
+  return json({ posts });
+};
 
 export default function Index() {
-  const user = useOptionalUser();
+  const { posts } = useLoaderData();
   return (
-    <main>
-      {user ? (
-        <pre>{JSON.stringify(user, null, 2)}</pre>
-      ) : (
-        <div>
-          <Link to="/join">Sign up</Link>
-          <Link to="/login">Log In</Link>
-        </div>
-      )}
-    </main>
+    <>
+      <div className="flex items-center flex-shrink-0 px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+        <div className="text-xl font-bold leading-tight">Latest posts</div>
+      </div>
+
+      <div className="overflow-y-auto">
+        {posts.map((post) => (
+          <Post key={post.id} post={post} />
+        ))}
+      </div>
+    </>
   );
 }

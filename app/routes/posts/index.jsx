@@ -4,12 +4,13 @@ import { Form, useActionData, useLoaderData } from "@remix-run/react";
 
 import { useUser } from "~/utils";
 import { requireUserId } from "~/session.server";
-import { createPost, getAllPosts } from "~/models/post.server";
+import { createPost } from "~/models/post.server";
+import { getUserFeed } from "~/models/user.server";
 import Post from "~/components/Post";
 
 export const loader = async ({ request }) => {
-  await requireUserId(request);
-  const posts = await getAllPosts();
+  const userId = await requireUserId(request);
+  const posts = await getUserFeed(userId);
   return json({ posts });
 };
 
