@@ -1,12 +1,19 @@
 import { Link, NavLink } from "@remix-run/react";
-import { Logo, HomeIcon, UserIcon, SettingsIcon } from "./Icons";
+import { useOptionalUser } from "~/utils";
+import { Logo, HomeIcon, UserIcon, SettingsIcon, EmailIcon } from "./Icons";
 
-const Sidebar = ({ user }) => {
-  const links = [
+const Sidebar = () => {
+  const user = useOptionalUser();
+
+  const userLinks = [
     { to: "/notes", icon: HomeIcon, text: "Home" },
-    { to: `/users/${user.username}`, icon: UserIcon, text: "Profile" },
+    { to: `/users/${user?.username}`, icon: UserIcon, text: "Profile" },
     { to: "/settings", icon: SettingsIcon, text: "Settings" },
   ];
+
+  const guestLinks = [{ to: "/join", icon: EmailIcon, text: "Join" }];
+
+  const links = user ? userLinks : guestLinks;
 
   return (
     <div className="flex flex-col w-24 min-h-screen px-4 py-2 border-r border-gray-200 dark:border-gray-800 lg:w-64">
@@ -35,20 +42,22 @@ const Sidebar = ({ user }) => {
         ))}
       </nav>
 
-      <Link
-        to={`/users/${user.username}`}
-        className="flex p-3 transition-colors rounded-full cursor-pointer hover:bg-blue-100/50 dark:hover:bg-blue-900/30"
-      >
-        <img
-          className="w-10 h-10 mr-3 bg-gray-100 rounded-full"
-          src="https://source.boringavatars.com/marble/120/"
-          alt="#"
-        />
-        <div className="hidden lg:block">
-          <div className="font-bold leading-tight">{user.name}</div>
-          <div className="leading-tight text-gray-500">@{user.username}</div>
-        </div>
-      </Link>
+      {user && (
+        <Link
+          to={`/users/${user.username}`}
+          className="flex p-3 transition-colors rounded-full cursor-pointer hover:bg-blue-100/50 dark:hover:bg-blue-900/30"
+        >
+          <img
+            className="w-10 h-10 mr-3 bg-gray-100 rounded-full"
+            src="https://source.boringavatars.com/marble/120/"
+            alt="#"
+          />
+          <div className="hidden lg:block">
+            <div className="font-bold leading-tight">{user.name}</div>
+            <div className="leading-tight text-gray-500">@{user.username}</div>
+          </div>
+        </Link>
+      )}
     </div>
   );
 };

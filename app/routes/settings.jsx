@@ -41,7 +41,7 @@ export default function SettingsPage() {
   return (
     <div className="flex min-h-screen overflow-hidden">
       <div className="flex mx-auto">
-        <Sidebar user={user} />
+        <Sidebar />
 
         <main className="flex w-[600px] flex-col border-r border-gray-200 dark:border-gray-800">
           {/* Top */}
