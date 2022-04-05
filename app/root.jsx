@@ -34,7 +34,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="flex min-h-screen overflow-hidden text-gray-900 bg-white dark:bg-black dark:text-white">
+      <body className="text-gray-900 bg-white dark:bg-black dark:text-white">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
