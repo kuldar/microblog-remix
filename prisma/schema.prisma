@@ -24,8 +24,9 @@ model User {
 
   password   Password?
   posts      Post[]
-  followers  Follow[]  @relation("followed")
-  followings Follow[]  @relation("follower")
+  followers  Follow[]   @relation("followed")
+  followings Follow[]   @relation("follower")
+  likes      PostLike[]
 }
 
 model Follow {
@@ -46,6 +47,17 @@ model Password {
   userId String @unique
 }
 
+model PostLike {
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId String
+
+  createdAt DateTime @default(now())
+
+  @@id([userId, postId])
+}
+
 model Post {
   id   String @id @default(cuid())
   body String
@@ -53,6 +65,7 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author   User       @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   authorId String
+  likes    PostLike[]
 }

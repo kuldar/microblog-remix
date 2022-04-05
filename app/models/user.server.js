@@ -42,7 +42,13 @@ export async function getUserFeed(userId) {
 
   const posts = await prisma.post.findMany({
     where: { authorId: { in: userIds } },
-    select: { id: true, body: true, createdAt: true, author: true },
+    select: {
+      id: true,
+      body: true,
+      createdAt: true,
+      author: true,
+      _count: { select: { likes: true } },
+    },
     orderBy: { updatedAt: "desc" },
     take: 10,
   });
