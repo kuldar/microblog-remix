@@ -5,6 +5,7 @@ import { getUserById } from "~/models/user.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
+// Session Storage
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "__session",
@@ -19,17 +20,20 @@ export const sessionStorage = createCookieSessionStorage({
 
 const USER_SESSION_KEY = "userId";
 
+// Get Session
 export async function getSession(request) {
   const cookie = request.headers.get("Cookie");
   return sessionStorage.getSession(cookie);
 }
 
+// Get User ID
 export async function getUserId(request) {
   const session = await getSession(request);
   const userId = session.get(USER_SESSION_KEY);
   return userId;
 }
 
+// Get User
 export async function getUser(request) {
   const userId = await getUserId(request);
   if (userId === undefined) return null;
@@ -40,6 +44,7 @@ export async function getUser(request) {
   throw await logout(request);
 }
 
+// Require User ID
 export async function requireUserId(
   request,
   redirectTo = new URL(request.url).pathname
@@ -52,6 +57,7 @@ export async function requireUserId(
   return userId;
 }
 
+// Require User
 export async function requireUser(request) {
   const userId = await requireUserId(request);
 
@@ -61,6 +67,7 @@ export async function requireUser(request) {
   throw await logout(request);
 }
 
+// Create User Session
 export async function createUserSession({
   request,
   userId,
@@ -80,6 +87,7 @@ export async function createUserSession({
   });
 }
 
+// Logout
 export async function logout(request) {
   const session = await getSession(request);
   return redirect("/", {

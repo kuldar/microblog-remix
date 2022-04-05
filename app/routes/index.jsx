@@ -7,7 +7,7 @@ export default function Index() {
   return (
     <main>
       {user ? (
-        <Link to="/notes">View Notes for {user.email}</Link>
+        <pre>{JSON.stringify(user, null, 2)}</pre>
       ) : (
         <div>
           <Link to="/join">Sign up</Link>

@@ -8,8 +8,16 @@ generator client {
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
+  id       String  @id @default(cuid())
+  email    String  @unique
+  username String  @unique
+  name     String?
+  bio      String?
+  website  String?
+  location String?
+
+  avatarUrl String?
+  coverUrl  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -22,9 +22,7 @@ export const meta = () => ({
 });
 
 export const loader = async ({ request }) => {
-  return json({
-    user: await getUser(request),
-  });
+  return json({ user: await getUser(request) });
 };
 
 export default function App() {

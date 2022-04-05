@@ -45,7 +45,7 @@ const Sidebar = ({ user }) => {
           alt="#"
         />
         <div className="hidden lg:block">
-          <div className="font-bold leading-tight">{user.email}</div>
+          <div className="font-bold leading-tight">{user.name}</div>
           <div className="leading-tight text-gray-500">@{user.username}</div>
         </div>
       </Link>

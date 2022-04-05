@@ -1,10 +1,13 @@
+import * as React from "react";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import * as React from "react";
 
 import { getUserId, createUserSession } from "~/session.server";
-
-import { createUser, getUserByEmail } from "~/models/user.server";
+import {
+  createUser,
+  getUserByEmail,
+  getUserByUsername,
+} from "~/models/user.server";
 import { validateEmail } from "~/utils";
 
 export const loader = async ({ request }) => {
@@ -16,11 +19,38 @@ export const loader = async ({ request }) => {
 export const action = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
+  const username = formData.get("username");
   const password = formData.get("password");
   const redirectTo = formData.get("redirectTo");
 
   if (!validateEmail(email)) {
     return json({ errors: { email: "Email is invalid" } }, { status: 400 });
+  }
+
+  if (typeof username !== "string") {
+    return json(
+      { errors: { username: "Username is required" } },
+      { status: 400 }
+    );
+  }
+
+  if (username.length < 3) {
+    return json(
+      { errors: { username: "Username must be at least 3 characters long" } },
+      { status: 400 }
+    );
+  }
+
+  if (!/^[a-z0-9_.]+$/.test(username)) {
+    return json(
+      {
+        errors: {
+          username:
+            "Username can only include letters, numbers, underscores and periods",
+        },
+      },
+      { status: 400 }
+    );
   }
 
   if (typeof password !== "string") {
@@ -32,20 +62,28 @@ export const action = async ({ request }) => {
 
   if (password.length < 8) {
     return json(
-      { errors: { password: "Password is too short" } },
+      { errors: { password: "Password must be at least 8 characters long" } },
       { status: 400 }
     );
   }
 
-  const existingUser = await getUserByEmail(email);
-  if (existingUser) {
+  const existingUserEmail = await getUserByEmail(email);
+  if (existingUserEmail) {
     return json(
       { errors: { email: "A user already exists with this email" } },
       { status: 400 }
     );
   }
 
-  const user = await createUser(email, password);
+  const existingUserUsername = await getUserByUsername(username);
+  if (existingUserUsername) {
+    return json(
+      { errors: { username: "A user already exists with this username" } },
+      { status: 400 }
+    );
+  }
+
+  const user = await createUser(email, username, password);
 
   return createUserSession({
     request,
@@ -65,12 +103,16 @@ export default function Join() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
   const actionData = useActionData();
+
   const emailRef = React.useRef(null);
+  const usernameRef = React.useRef(null);
   const passwordRef = React.useRef(null);
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {
       emailRef.current?.focus();
+    } else if (actionData?.errors?.username) {
+      usernameRef.current?.focus();
     } else if (actionData?.errors?.password) {
       passwordRef.current?.focus();
     }
@@ -122,6 +164,29 @@ export default function Join() {
           {actionData?.errors?.email && (
             <div id="email-error" className="text-sm text-red-400">
               {actionData.errors.email}
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col space-y-2">
+          <label htmlFor="username" className="font-semibold">
+            Username
+          </label>
+
+          <input
+            ref={usernameRef}
+            id="username"
+            required
+            name="username"
+            type="text"
+            autoComplete="username"
+            aria-invalid={actionData?.errors?.username ? true : undefined}
+            aria-describedby="username-error"
+            className="p-3 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-black"
+          />
+          {actionData?.errors?.username && (
+            <div id="username-error" className="text-sm text-red-400">
+              {actionData.errors.username}
             </div>
           )}
         </div>

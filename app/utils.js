@@ -2,8 +2,9 @@ import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
 /**
- * This base hook is used in other hooks to quickly search for specific data
- * across all loader data using useMatches.
+ * This base hook is used in other hooks
+ * to quickly search for specific data
+ * across all loader data, using useMatches.
  */
 export function useMatchesData(id) {
   const matchingRoutes = useMatches();
@@ -14,10 +15,12 @@ export function useMatchesData(id) {
   return route?.data;
 }
 
+// Is User
 function isUser(user) {
   return user && typeof user === "object" && typeof user.email === "string";
 }
 
+// Use Optional User
 export function useOptionalUser() {
   const data = useMatchesData("root");
   if (!data || !isUser(data.user)) {
@@ -26,6 +29,7 @@ export function useOptionalUser() {
   return data.user;
 }
 
+// Use User
 export function useUser() {
   const maybeUser = useOptionalUser();
   if (!maybeUser) {
@@ -36,6 +40,7 @@ export function useUser() {
   return maybeUser;
 }
 
+// Validate Email
 export function validateEmail(email) {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
