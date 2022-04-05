@@ -47,13 +47,19 @@ const Sidebar = () => {
           to={`/users/${user.username}`}
           className="flex p-3 transition-colors rounded-full cursor-pointer hover:bg-blue-100/50 dark:hover:bg-blue-900/30"
         >
-          <img
-            className="w-10 h-10 mr-3 bg-gray-100 rounded-full"
-            src="https://source.boringavatars.com/marble/120/"
-            alt="#"
-          />
+          {user.avatarUrl ? (
+            <img
+              className="w-10 h-10 mr-3 bg-gray-100 rounded-full"
+              src={user.avatarUrl}
+              alt="#"
+            />
+          ) : (
+            <div className="w-10 h-10 mr-3 bg-gray-100 rounded-full dark:bg-gray-900" />
+          )}
           <div className="hidden lg:block">
-            <div className="font-bold leading-tight">{user.name}</div>
+            <div className="font-bold leading-tight">
+              {user.name || user.username}
+            </div>
             <div className="leading-tight text-gray-500">@{user.username}</div>
           </div>
         </Link>

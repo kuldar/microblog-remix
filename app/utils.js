@@ -44,3 +44,28 @@ export function useUser() {
 export function validateEmail(email) {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
+
+// Format Time Ago
+export function formatTimeago(date) {
+  const then = new Date(date);
+  const now = new Date();
+  const seconds = Math.floor((now - then) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) {
+    return `${seconds}s`;
+  } else if (minutes < 60) {
+    return `${minutes}m`;
+  } else if (hours < 24) {
+    return `${hours}h`;
+  } else if (days < 30) {
+    return `${days}d`;
+  } else {
+    return then.toLocaleDateString("en-us", {
+      month: "short",
+      day: "numeric",
+    });
+  }
+}

@@ -8,11 +8,15 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import stylesheetUrl from "./styles/styles.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getUser } from "./session.server";
 
 export const links = () => {
-  return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
+  return [
+    { rel: "stylesheet", href: stylesheetUrl },
+    { rel: "stylesheet", href: tailwindStylesheetUrl },
+  ];
 };
 
 export const meta = () => ({

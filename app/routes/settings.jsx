@@ -13,12 +13,17 @@ export const loader = async ({ request }) => {
 export const action = async ({ request }) => {
   const userId = await requireUserId(request);
   const formData = await request.formData();
-  const name = formData.get("name");
-  const bio = formData.get("bio");
-  const location = formData.get("location");
-  const website = formData.get("website");
-  const avatarUrl = formData.get("avatarUrl");
-  const coverUrl = formData.get("coverUrl");
+
+  let name = formData.get("name");
+  let bio = formData.get("bio");
+  let location = formData.get("location");
+  let website = formData.get("website");
+  let avatarUrl = formData.get("avatarUrl");
+  let coverUrl = formData.get("coverUrl");
+
+  if (website !== "" && !/^https?:\/\//i.test(website)) {
+    website = "http://" + website;
+  }
 
   const userUpdates = {
     id: userId,
