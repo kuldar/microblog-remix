@@ -6,7 +6,7 @@ const Sidebar = () => {
   const user = useOptionalUser();
 
   const userLinks = [
-    { to: "/notes", icon: HomeIcon, text: "Home" },
+    { to: "/posts", icon: HomeIcon, text: "Home" },
     { to: `/users/${user?.username}`, icon: UserIcon, text: "Profile" },
     { to: "/settings", icon: SettingsIcon, text: "Settings" },
   ];

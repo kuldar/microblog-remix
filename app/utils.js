@@ -69,3 +69,20 @@ export function formatTimeago(date) {
     });
   }
 }
+
+export function formatDate(date) {
+  const dateOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+
+  const timeOptions = {
+    hour: "numeric",
+    minute: "numeric",
+  };
+
+  const formattedDate = new Date(date).toLocaleDateString("en-us", dateOptions);
+  const formattedTime = new Date(date).toLocaleTimeString("en-us", timeOptions);
+  return `${formattedTime} · ${formattedDate}`;
+}

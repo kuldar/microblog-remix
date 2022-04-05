@@ -6,7 +6,10 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
+
+import Sidebar from "~/components/Sidebar";
 
 import stylesheetUrl from "./styles/styles.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
@@ -30,6 +33,7 @@ export const loader = async ({ request }) => {
 };
 
 export default function App() {
+  const { user } = useLoaderData();
   return (
     <html lang="en" className="min-h-screen">
       <head>
@@ -37,7 +41,16 @@ export default function App() {
         <Links />
       </head>
       <body className="text-gray-900 bg-white dark:bg-black dark:text-white">
-        <Outlet />
+        <div className="flex min-h-screen overflow-hidden">
+          <div className="flex mx-auto">
+            <Sidebar user={user} />
+
+            <main className="flex w-[600px] flex-col border-r border-gray-200 dark:border-gray-800">
+              <Outlet />
+            </main>
+          </div>
+        </div>
+
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
