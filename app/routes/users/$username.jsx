@@ -1,5 +1,6 @@
 import { json } from "@remix-run/node";
 import {
+  Form,
   NavLink,
   Link,
   Outlet,
@@ -8,7 +9,13 @@ import {
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import { getUserByUsername } from "~/models/user.server";
+import { getUserId, requireUserId } from "~/session.server";
+import {
+  getUserByUsername,
+  isFollowing,
+  followUser,
+  unfollowUser,
+} from "~/models/user.server";
 import { useOptionalUser } from "~/utils";
 import {
   ArrowLeftIcon,
@@ -19,13 +26,32 @@ import {
 
 export const loader = async ({ request, params }) => {
   invariant(params.username, "username not found");
-
+  const userId = await getUserId(request);
   const user = await getUserByUsername(params.username);
+  const followed = await isFollowing({
+    followedId: user.id,
+    followerId: userId,
+  });
+
   if (!user) {
     throw new Response("Not Found", { status: 404 });
   }
 
-  return json({ user });
+  return json({ user, followed });
+};
+
+export const action = async ({ request }) => {
+  const userId = await requireUserId(request);
+  const formData = await request.formData();
+  const { _action, ...values } = Object.fromEntries(formData);
+
+  if (_action === "follow") {
+    return await followUser(userId, values.userId);
+  }
+
+  if (_action === "unfollow") {
+    return await unfollowUser(userId, values.userId);
+  }
 };
 
 export default function UserPage() {
@@ -35,6 +61,7 @@ export default function UserPage() {
 
   return (
     <>
+      {/* Top */}
       <div className="flex items-center flex-shrink-0 px-4 py-3 border-b border-gray-200 dark:border-gray-800">
         <button
           type="button"
@@ -85,12 +112,31 @@ export default function UserPage() {
                 </Link>
               )}
               {user && user.id !== data.user.id && (
-                <form method="put" action="/api/follow">
-                  <input type="hidden" name="user_id" value={data.user.id} />
-                  <button className="block px-4 py-2 font-bold text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600">
-                    Follow
-                  </button>
-                </form>
+                <>
+                  {data.followed ? (
+                    <Form method="post">
+                      <input type="hidden" name="userId" value={data.user.id} />
+                      <button
+                        name="_action"
+                        value="unfollow"
+                        className="block px-4 py-2 font-bold text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
+                      >
+                        Unfollow
+                      </button>
+                    </Form>
+                  ) : (
+                    <Form method="post">
+                      <input type="hidden" name="userId" value={data.user.id} />
+                      <button
+                        name="_action"
+                        value="follow"
+                        className="block px-4 py-2 font-bold text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
+                      >
+                        Follow
+                      </button>
+                    </Form>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -157,13 +203,13 @@ export default function UserPage() {
           {/* Stats */}
           <div className="flex mb-4 space-x-4">
             <Link to="following" className="flex space-x-2 group">
-              <div className="font-bold">15</div>
+              <div className="font-bold">{data.user._count.follower}</div>
               <div className="text-gray-500 group-hover:underline">
                 Following
               </div>
             </Link>
             <Link to="followers" className="flex space-x-2 group">
-              <div className="font-bold">12</div>
+              <div className="font-bold">{data.user._count.followed}</div>
               <div className="text-gray-500 group-hover:underline">
                 Followers
               </div>

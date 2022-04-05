@@ -14,9 +14,19 @@ export async function getUserByEmail(email) {
   return prisma.user.findUnique({ where: { email } });
 }
 
+// Is Following
+export async function isFollowing({ followedId, followerId }) {
+  return prisma.follow.findUnique({
+    where: { followerId_followedId: { followerId, followedId } },
+  });
+}
+
 // Get User By Username
 export async function getUserByUsername(username) {
-  return prisma.user.findUnique({ where: { username } });
+  return prisma.user.findUnique({
+    where: { username },
+    include: { _count: { select: { follower: true, followed: true } } },
+  });
 }
 
 // Create User
@@ -83,4 +93,23 @@ export async function verifyLogin(email, password) {
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
+}
+
+// Follow User
+export async function followUser(followerId, followedId) {
+  const follow = await prisma.follow.create({
+    data: {
+      followerId: followerId,
+      followedId: followedId,
+    },
+  });
+
+  return follow;
+}
+
+// Unfollow User
+export async function unfollowUser(followerId, followedId) {
+  return await prisma.follow.delete({
+    where: { followerId_followedId: { followerId, followedId } },
+  });
 }

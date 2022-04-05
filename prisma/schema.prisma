@@ -24,6 +24,19 @@ model User {
 
   password Password?
   posts    Post[]
+  follower Follow[]  @relation("follower")
+  followed Follow[]  @relation("followed")
+}
+
+model Follow {
+  follower   User   @relation("follower", fields: [followerId], references: [id])
+  followerId String
+  followed   User   @relation("followed", fields: [followedId], references: [id])
+  followedId String
+
+  createdAt DateTime @default(now())
+
+  @@id([followerId, followedId])
 }
 
 model Password {

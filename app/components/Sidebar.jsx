@@ -1,6 +1,13 @@
 import { Link, NavLink } from "@remix-run/react";
 import { useOptionalUser } from "~/utils";
-import { Logo, HomeIcon, UserIcon, SettingsIcon, EmailIcon } from "./Icons";
+import {
+  Logo,
+  HomeIcon,
+  UserIcon,
+  SettingsIcon,
+  EmailIcon,
+  KeyIcon,
+} from "./Icons";
 
 const Sidebar = () => {
   const user = useOptionalUser();
@@ -11,7 +18,10 @@ const Sidebar = () => {
     { to: "/settings", icon: SettingsIcon, text: "Settings" },
   ];
 
-  const guestLinks = [{ to: "/join", icon: EmailIcon, text: "Join" }];
+  const guestLinks = [
+    { to: "/join", icon: EmailIcon, text: "Join" },
+    { to: "/login", icon: KeyIcon, text: "Log In" },
+  ];
 
   const links = user ? userLinks : guestLinks;
 

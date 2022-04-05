@@ -8,6 +8,7 @@ import { createPost, getAllPosts } from "~/models/post.server";
 import Post from "~/components/Post";
 
 export const loader = async ({ request }) => {
+  await requireUserId(request);
   const posts = await getAllPosts();
   return json({ posts });
 };

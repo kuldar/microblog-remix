@@ -56,6 +56,6 @@
     "node": ">=14"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "node prisma/seed.mjs"
   }
 }
