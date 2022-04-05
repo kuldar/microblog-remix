@@ -16,6 +16,7 @@ export async function getUserByEmail(email) {
 
 // Is Following
 export async function isFollowing({ followedId, followerId }) {
+  if (!followedId || !followerId) return false;
   return prisma.follow.findUnique({
     where: { followerId_followedId: { followerId, followedId } },
   });

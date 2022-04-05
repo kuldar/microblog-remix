@@ -10,45 +10,60 @@ async function seed() {
   await db.post.deleteMany({});
   await db.follow.deleteMany({});
 
-  let peter = {
-    username: "peter",
-    email: "peter@example.com",
+  let mike = {
+    name: "Mike Ehrmantraut",
+    bio: "Security services",
+    location: "Albuquerque",
+    username: "mike",
+    email: "mike@email.com",
     password: "password",
-    hashedPassword: "",
+    avatarUrl:
+      "https://www.indiewire.com/wp-content/uploads/2019/09/Jonathan-Banks-Mike-QA-1200x707.jpg",
+    coverUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Green_Grass.JPG/2560px-Green_Grass.JPG",
   };
 
-  let bob = {
-    username: "bob",
-    email: "bob@example.com",
+  let saul = {
+    name: "Saul Goodman",
+    bio: "Hi. I’m Saul Goodman. Did you know that you have rights? The Constitution says you do. And so do I. I believe that until proven guilty, every man, woman, and child in this country is innocent. And that’s why I fight for you, Albuquerque! Better call Saul!",
+    location: "Albuquerque",
+    website: "http://saulgoodman.wix.com",
+    username: "saulgoodman",
+    email: "saul@email.com",
     password: "password",
-    hashedPassword: "",
+    avatarUrl:
+      "https://i.insider.com/54c8770469bedd234987fe1e?width=1136&format=jpeg",
+    coverUrl:
+      "https://static1.colliderimages.com/wordpress/wp-content/uploads/2022/03/better-call-saul.jpg",
   };
 
-  peter.hashedPassword = await bcrypt.hash(peter.password, 10);
-  bob.hashedPassword = await bcrypt.hash(bob.password, 10);
-
-  const dbPeter = await db.user.create({
+  const mikeUser = await db.user.create({
     data: {
-      email: peter.email,
-      username: peter.username,
-      password: { create: { hash: peter.hashedPassword } },
+      ...mike,
+      password: { create: { hash: await bcrypt.hash(mike.password, 10) } },
     },
   });
 
-  const dbBob = await db.user.create({
+  const saulUser = await db.user.create({
     data: {
-      email: bob.email,
-      username: bob.username,
-      password: { create: { hash: bob.hashedPassword } },
+      ...saul,
+      password: { create: { hash: await bcrypt.hash(saul.password, 10) } },
+    },
+  });
+
+  const follow = await db.follow.create({
+    data: {
+      follower: { connect: { id: mikeUser.id } },
+      followed: { connect: { id: saulUser.id } },
     },
   });
 
   const posts = [
-    { body: "Hello World", authorId: dbPeter.id },
-    { body: "Hello again world?", authorId: dbPeter.id },
-    { body: "Whaats uuuup world", authorId: dbPeter.id },
-    { body: "Umm, ok", authorId: dbBob.id },
-    { body: "What is this even", authorId: dbBob.id },
+    { body: "Hello World", authorId: saulUser.id },
+    { body: "Hello again world?", authorId: saulUser.id },
+    { body: "Whaats uuuup world", authorId: saulUser.id },
+    { body: "Umm, ok", authorId: mikeUser.id },
+    { body: "What is this even", authorId: mikeUser.id },
   ];
 
   posts.map(async (post) => {
