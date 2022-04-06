@@ -1,11 +1,10 @@
 import { Link, useFetcher } from "@remix-run/react";
 
-import { formatTimeago, useOptionalUser } from "~/utils";
+import { formatTimeago } from "~/utils";
 import { CommentIcon, RepostIcon, LikeIcon } from "~/components/Icons";
 
 const Post = ({ post }) => {
   const fetcher = useFetcher();
-  const user = useOptionalUser();
 
   return (
     <div className="flex px-4 pt-4 pb-3 transition-colors border-b border-gray-200 hover:bg-gray-100/50 dark:border-gray-800 dark:hover:bg-gray-900/30">
@@ -75,20 +74,37 @@ const Post = ({ post }) => {
           </a>
 
           {/* Likes  */}
-          <fetcher.Form method="post" action={`/posts/${post.id}`}>
-            <button
-              name="_action"
-              value="like"
-              className="flex items-center text-gray-400 group hover:text-pink-500 dark:text-gray-600"
-            >
-              <div className="flex items-center justify-center w-8 h-8 transition-colors rounded-full group-hover:bg-pink-100/80 dark:group-hover:bg-pink-900/40">
-                <LikeIcon />
-              </div>
-              <span className="px-2 transition-colors">
-                {post._count.likes}
-              </span>
-            </button>
-          </fetcher.Form>
+          {post.likes?.length > 0 ? (
+            <fetcher.Form method="post" action={`/posts/${post.id}`}>
+              <button
+                name="_action"
+                value="unlike"
+                className="flex items-center text-pink-500 group "
+              >
+                <div className="flex items-center justify-center w-8 h-8 transition-colors rounded-full group-hover:bg-pink-100/80 dark:group-hover:bg-pink-900/40">
+                  <LikeIcon />
+                </div>
+                <span className="px-2 transition-colors">
+                  {post._count.likes}
+                </span>
+              </button>
+            </fetcher.Form>
+          ) : (
+            <fetcher.Form method="post" action={`/posts/${post.id}`}>
+              <button
+                name="_action"
+                value="like"
+                className="flex items-center text-gray-400 group hover:text-pink-500 dark:text-gray-600"
+              >
+                <div className="flex items-center justify-center w-8 h-8 transition-colors rounded-full group-hover:bg-pink-100/80 dark:group-hover:bg-pink-900/40">
+                  <LikeIcon />
+                </div>
+                <span className="px-2 transition-colors">
+                  {post._count.likes}
+                </span>
+              </button>
+            </fetcher.Form>
+          )}
         </div>
       </div>
     </div>

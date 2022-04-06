@@ -6,6 +6,7 @@ import {
   useLoaderData,
   useActionData,
   useNavigate,
+  useFetcher,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
@@ -27,8 +28,9 @@ import {
 // Loader
 export const loader = async ({ request, params }) => {
   invariant(params.postId, "postId not found");
+  const userId = await requireUserId(request);
 
-  const post = await getPost({ id: params.postId });
+  const post = await getPost({ id: params.postId, userId });
   if (!post) {
     throw new Response("Not Found", { status: 404 });
   }
@@ -71,6 +73,7 @@ export default function PostPage() {
   const user = useOptionalUser();
   const { post } = useLoaderData();
   const navigate = useNavigate();
+  const fetcher = useFetcher();
 
   const actionData = useActionData();
   const bodyRef = React.useRef(null);
@@ -109,7 +112,7 @@ export default function PostPage() {
               {post.author.avatarUrl ? (
                 <img
                   className="w-12 h-12 rounded-full"
-                  src="https://source.boringavatars.com/marble/140/"
+                  src={post.author.avatarUrl}
                   alt={post.author.username}
                 />
               ) : (
@@ -145,8 +148,10 @@ export default function PostPage() {
               <div className="text-gray-500 group-hover:underline">Reposts</div>
             </a>
             <a className="flex space-x-2 group" href="#">
-              <div className="font-bold">89</div>
-              <div className="text-gray-500 group-hover:underline">Likes</div>
+              <div className="font-bold">{post._count.likes}</div>
+              <div className="text-gray-500 group-hover:underline">
+                {post._count.likes === 1 ? "Like" : "Likes"}
+              </div>
             </a>
           </div>
 
@@ -166,12 +171,28 @@ export default function PostPage() {
               <RepostIcon />
             </Link>
 
-            <Link
-              to="#"
-              className="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-full hover:bg-pink-100/50 hover:text-pink-500 dark:text-gray-600 dark:hover:bg-pink-900/50"
-            >
-              <LikeIcon />
-            </Link>
+            {/* Likes  */}
+            {post.likes?.length > 0 ? (
+              <fetcher.Form method="post" action={`/posts/${post.id}`}>
+                <button
+                  name="_action"
+                  value="unlike"
+                  className="flex items-center justify-center w-8 h-8 text-pink-500 transition-colors rounded-full hover:bg-pink-100/50 dark:hover:bg-pink-900/50"
+                >
+                  <LikeIcon />
+                </button>
+              </fetcher.Form>
+            ) : (
+              <fetcher.Form method="post" action={`/posts/${post.id}`}>
+                <button
+                  name="_action"
+                  value="like"
+                  className="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-full hover:bg-pink-100/50 hover:text-pink-500 dark:text-gray-600 dark:hover:bg-pink-900/50"
+                >
+                  <LikeIcon />
+                </button>
+              </fetcher.Form>
+            )}
           </div>
 
           {/* New post form */}

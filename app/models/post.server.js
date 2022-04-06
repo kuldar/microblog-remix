@@ -1,10 +1,33 @@
 import { prisma } from "~/db.server";
 
-export function getPost({ id }) {
-  return prisma.post.findFirst({
-    where: { id },
-    include: { author: true },
-  });
+export function getPost({ id, userId }) {
+  if (userId) {
+    return prisma.post.findFirst({
+      where: { id },
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+        author: true,
+        likes: {
+          where: { userId },
+          select: { createdAt: true },
+        },
+        _count: { select: { likes: true } },
+      },
+    });
+  } else {
+    return prisma.post.findFirst({
+      where: { id },
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+        author: true,
+        _count: { select: { likes: true } },
+      },
+    });
+  }
 }
 
 export function getAllPosts() {
@@ -20,18 +43,36 @@ export function getAllPosts() {
   });
 }
 
-export function getUserPosts({ username }) {
-  return prisma.post.findMany({
-    where: { author: { is: { username } } },
-    select: {
-      id: true,
-      body: true,
-      createdAt: true,
-      author: true,
-      _count: { select: { likes: true } },
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+export async function getUserPosts({ username, userId }) {
+  if (userId) {
+    return prisma.post.findMany({
+      where: { author: { is: { username } } },
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+        author: true,
+        likes: {
+          where: { userId },
+          select: { createdAt: true },
+        },
+        _count: { select: { likes: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+  } else {
+    return prisma.post.findMany({
+      where: { author: { is: { username } } },
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+        author: true,
+        _count: { select: { likes: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+  }
 }
 
 export function createPost({ body, userId }) {
