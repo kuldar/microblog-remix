@@ -19,7 +19,7 @@ const Post = ({ post: _post }) => {
         {isRepost && (
           <Link
             to={`/users/${_post.author.username}`}
-            className="flex items-center mb-2 ml-16 text-gray-500 group"
+            className="flex items-center self-start mb-2 ml-16 text-gray-500 group"
           >
             <SmallRepostIcon />
             <div className="ml-1 text-sm font-medium text-gray-500 group-hover:underline">
@@ -46,7 +46,7 @@ const Post = ({ post: _post }) => {
 
           <div className="w-full">
             {/* Post header  */}
-            <div className="flex mb-1">
+            <div className="flex">
               <Link to={`/users/${post.author.username}`} className="group">
                 <span className="font-bold group-hover:underline">
                   {post.author.name || post.author.username}
@@ -64,8 +64,20 @@ const Post = ({ post: _post }) => {
               </a>
             </div>
 
+            {post.replyTo && (
+              <Link
+                to={`/posts/${post.replyTo.id}`}
+                className="text-sm font-medium text-gray-500 group"
+              >
+                replying to{" "}
+                <span className="group-hover:underline">
+                  @{post.replyTo.author.username}
+                </span>
+              </Link>
+            )}
+
             {/* Post body  */}
-            <div className="space-y-2 leading-snug">
+            <div className="mt-1 space-y-2 leading-snug">
               {post.body?.split("\n").map((item, key) => {
                 return <p key={key}>{item}</p>;
               })}
@@ -74,15 +86,17 @@ const Post = ({ post: _post }) => {
             {/* Post footer  */}
             <div className="flex mt-2 space-x-10">
               {/* Comments  */}
-              <a
-                href="/"
+              <Link
+                to={`/posts/${post.id}`}
                 className="flex items-center text-gray-400 group hover:text-blue-500 dark:text-gray-600"
               >
                 <div className="flex items-center justify-center w-8 h-8 transition-colors rounded-full group-hover:bg-blue-100/80 dark:group-hover:bg-blue-900/40">
                   <CommentIcon />
                 </div>
-                <span className="px-2 transition-colors">0</span>
-              </a>
+                <span className="px-2 transition-colors">
+                  {post._count.replies}
+                </span>
+              </Link>
 
               {/* Reposts  */}
               {post.reposts?.length > 0 ? (

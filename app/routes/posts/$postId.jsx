@@ -10,11 +10,12 @@ import {
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
+import Post from "~/components/Post";
 import { formatDate, useOptionalUser } from "~/utils";
 import { requireUserId, getUserId } from "~/session.server";
 import {
   getPost,
-  createPost,
+  createReply,
   likePost,
   unlikePost,
   repostPost,
@@ -68,14 +69,14 @@ export const action = async ({ request, params }) => {
     return json({});
   }
 
-  if (_action === "comment") {
+  if (_action === "reply") {
     const body = formData.get("body");
 
     if (typeof body !== "string" || body.length === 0) {
       return json({ errors: { body: "Body is required" } }, { status: 400 });
     }
 
-    const post = await createPost({ body, userId });
+    const post = await createReply({ body, userId, postId: params.postId });
 
     return json({ post });
   }
@@ -94,6 +95,8 @@ export default function PostPage() {
   React.useEffect(() => {
     if (actionData?.errors?.body) {
       bodyRef.current?.focus();
+    } else {
+      bodyRef.current.value = "";
     }
   }, [actionData]);
 
@@ -117,7 +120,7 @@ export default function PostPage() {
       <div className="overflow-y-auto">
         {/* Post */}
         <div className="flex flex-col p-4 border-b border-gray-200 dark:border-gray-800">
-          <div className="flex items-center mb-4">
+          <div className="flex items-center mb-2">
             <Link
               to={`/users/${post.author.username}`}
               className="transition-opacity hover:opacity-90"
@@ -141,6 +144,18 @@ export default function PostPage() {
               </div>
             </Link>
           </div>
+
+          {post.replyTo && (
+            <Link
+              to={`/posts/${post.replyTo.id}`}
+              className="mb-2 text-sm font-medium text-gray-500 group"
+            >
+              replying to{" "}
+              <span className="group-hover:underline">
+                @{post.replyTo.author.username}
+              </span>
+            </Link>
+          )}
 
           {/* Text */}
           <div className="mb-2 space-y-4 text-xl leading-tight">
@@ -253,14 +268,14 @@ export default function PostPage() {
                 aria-errormessage={
                   actionData?.errors?.body ? "body-error" : undefined
                 }
-                className="flex-1 px-2 py-3 text-xl bg-white dark:bg-black"
+                className="flex-1 px-2 py-3 text-xl bg-white outline-none dark:bg-black"
               />
               {actionData?.errors?.body && (
                 <div id="body-error">{actionData.errors.body}</div>
               )}
               <button
                 name="_action"
-                value="comment"
+                value="reply"
                 className="px-5 py-3 mt-1 font-bold leading-none text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
                 type="submit"
               >
@@ -275,8 +290,9 @@ export default function PostPage() {
 
         {/* Replies */}
         <div>
-          {/* <Post />
-          <Post /> */}
+          {post.replies?.map((reply) => (
+            <Post key={reply.id} post={reply} />
+          ))}
         </div>
       </div>
     </>

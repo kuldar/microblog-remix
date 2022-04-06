@@ -72,4 +72,8 @@ model Post {
   repost   Post?   @relation("repost", fields: [repostId], references: [id])
   repostId String?
   reposts  Post[]  @relation("repost")
+
+  replyTo   Post?   @relation("reply", fields: [replyToId], references: [id])
+  replyToId String?
+  replies   Post[]  @relation("reply")
 }

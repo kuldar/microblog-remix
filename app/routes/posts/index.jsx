@@ -39,6 +39,8 @@ export default function PostsPage() {
   React.useEffect(() => {
     if (actionData?.errors?.body) {
       bodyRef.current?.focus();
+    } else {
+      bodyRef.current.value = "";
     }
   }, [actionData]);
 
@@ -72,7 +74,7 @@ export default function PostsPage() {
               aria-errormessage={
                 actionData?.errors?.body ? "body-error" : undefined
               }
-              className="px-2 py-3 text-xl bg-white dark:bg-black"
+              className="px-2 py-3 text-xl bg-white outline-none dark:bg-black"
             />
             {actionData?.errors?.body && (
               <div id="body-error">{actionData.errors.body}</div>

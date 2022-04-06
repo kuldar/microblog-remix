@@ -26,7 +26,15 @@ export async function isFollowing({ followedId, followerId }) {
 export async function getUserByUsername(username) {
   return prisma.user.findUnique({
     where: { username },
-    include: { _count: { select: { followers: true, followings: true } } },
+    include: {
+      _count: {
+        select: {
+          followers: true,
+          followings: true,
+          posts: true,
+        },
+      },
+    },
   });
 }
 
@@ -41,7 +49,7 @@ export async function getUserFeed(userId) {
   user.followings.map((follow) => userIds.push(follow.followedId));
 
   const posts = await prisma.post.findMany({
-    where: { authorId: { in: userIds } },
+    where: { AND: [{ authorId: { in: userIds } }, { replyToId: null }] },
     select: {
       id: true,
       body: true,
@@ -49,16 +57,17 @@ export async function getUserFeed(userId) {
       author: { select: { username: true, name: true, avatarUrl: true } },
       reposts: { where: { authorId: userId }, select: { createdAt: true } },
       likes: { where: { userId }, select: { createdAt: true } },
-      _count: { select: { likes: true, reposts: true } },
+      _count: { select: { likes: true, reposts: true, replies: true } },
       repost: {
         select: {
           id: true,
           body: true,
           createdAt: true,
+          replyTo: { select: { id: true, author: true } },
           author: { select: { username: true, name: true, avatarUrl: true } },
           reposts: { where: { authorId: userId }, select: { createdAt: true } },
           likes: { where: { userId }, select: { createdAt: true } },
-          _count: { select: { likes: true, reposts: true } },
+          _count: { select: { likes: true, reposts: true, replies: true } },
         },
       },
     },

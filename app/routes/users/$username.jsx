@@ -80,7 +80,10 @@ export default function UserPage() {
           <div className="text-xl font-bold leading-tight">
             {data.user.name || data.user.username}
           </div>
-          <div className="text-sm leading-tight text-gray-500">12 posts</div>
+          <div className="text-sm leading-tight text-gray-500">
+            {data.user._count.posts}
+            {data.user._count.posts === 1 ? " post" : " posts"}
+          </div>
         </div>
       </div>
 
