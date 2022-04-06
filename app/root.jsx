@@ -40,7 +40,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="text-gray-900 bg-white dark:bg-black dark:text-white">
+      <body className="flex text-gray-900 bg-white dark:bg-black dark:text-white">
         <div className="flex h-screen mx-auto">
           <Sidebar user={user} />
           <main className="flex w-[600px] flex-col border-r border-gray-200 dark:border-gray-800">
