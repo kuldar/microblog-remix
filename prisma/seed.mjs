@@ -6,9 +6,11 @@ const db = new PrismaClient();
 
 async function seed() {
   // Cleanup the existing database
-  await db.user.deleteMany({});
-  await db.post.deleteMany({});
   await db.follow.deleteMany({});
+  await db.postLike.deleteMany({});
+  await db.post.deleteMany({});
+  await db.password.deleteMany({});
+  await db.user.deleteMany({});
 
   let mike = {
     name: "Mike Ehrmantraut",
