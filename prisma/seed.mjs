@@ -51,10 +51,17 @@ async function seed() {
     },
   });
 
-  const follow = await db.follow.create({
+  const followMike = await db.follow.create({
     data: {
       follower: { connect: { id: mikeUser.id } },
       followed: { connect: { id: saulUser.id } },
+    },
+  });
+
+  const followSaul = await db.follow.create({
+    data: {
+      follower: { connect: { id: saulUser.id } },
+      followed: { connect: { id: mikeUser.id } },
     },
   });
 

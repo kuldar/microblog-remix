@@ -59,8 +59,8 @@ model PostLike {
 }
 
 model Post {
-  id   String @id @default(cuid())
-  body String
+  id   String  @id @default(cuid())
+  body String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -68,4 +68,8 @@ model Post {
   author   User       @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   authorId String
   likes    PostLike[]
+
+  repost   Post?   @relation("repost", fields: [repostId], references: [id])
+  repostId String?
+  reposts  Post[]  @relation("repost")
 }

@@ -11,12 +11,14 @@ import {
 import invariant from "tiny-invariant";
 
 import { formatDate, useOptionalUser } from "~/utils";
-import { requireUserId } from "~/session.server";
+import { requireUserId, getUserId } from "~/session.server";
 import {
   getPost,
   createPost,
   likePost,
   unlikePost,
+  repostPost,
+  unpostPost,
 } from "~/models/post.server";
 import {
   ArrowLeftIcon,
@@ -28,7 +30,7 @@ import {
 // Loader
 export const loader = async ({ request, params }) => {
   invariant(params.postId, "postId not found");
-  const userId = await requireUserId(request);
+  const userId = await getUserId(request);
 
   const post = await getPost({ id: params.postId, userId });
   if (!post) {
@@ -43,6 +45,17 @@ export const action = async ({ request, params }) => {
 
   const formData = await request.formData();
   const { _action } = Object.fromEntries(formData);
+
+  if (_action === "repost") {
+    const postLike = await repostPost({ postId: params.postId, userId });
+    if (!postLike) return json({ error: "Problem with reposting the post" });
+    return json({ ok: true });
+  }
+
+  if (_action === "unpost") {
+    await unpostPost({ postId: params.postId, userId });
+    return json({});
+  }
 
   if (_action === "like") {
     const postLike = await likePost({ postId: params.postId, userId });
@@ -144,8 +157,10 @@ export default function PostPage() {
           {/* Stats */}
           <div className="flex py-3 space-x-4 border-t border-b border-gray-200 dark:border-gray-800">
             <a className="flex space-x-2 group" href="#">
-              <div className="font-bold">0</div>
-              <div className="text-gray-500 group-hover:underline">Reposts</div>
+              <div className="font-bold">{post._count.reposts}</div>
+              <div className="text-gray-500 group-hover:underline">
+                {post._count.reposts === 1 ? "Repost" : "Reposts"}
+              </div>
             </a>
             <a className="flex space-x-2 group" href="#">
               <div className="font-bold">{post._count.likes}</div>
@@ -164,12 +179,28 @@ export default function PostPage() {
               <CommentIcon />
             </Link>
 
-            <Link
-              to="#"
-              className="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-full hover:bg-green-100/50 hover:text-green-600 dark:text-gray-600 dark:hover:bg-green-900/50"
-            >
-              <RepostIcon />
-            </Link>
+            {/* Repost  */}
+            {post.reposts?.length > 0 ? (
+              <fetcher.Form method="post" action={`/posts/${post.id}`}>
+                <button
+                  name="_action"
+                  value="unpost"
+                  className="flex items-center justify-center w-8 h-8 text-green-600 transition-colors rounded-full hover:bg-green-100/50 dark:hover:bg-green-900/50"
+                >
+                  <RepostIcon />
+                </button>
+              </fetcher.Form>
+            ) : (
+              <fetcher.Form method="post" action={`/posts/${post.id}`}>
+                <button
+                  name="_action"
+                  value="repost"
+                  className="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-full hover:bg-green-100/50 hover:text-green-600 dark:text-gray-600 dark:hover:bg-green-900/50"
+                >
+                  <RepostIcon />
+                </button>
+              </fetcher.Form>
+            )}
 
             {/* Likes  */}
             {post.likes?.length > 0 ? (
