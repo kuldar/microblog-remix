@@ -100,7 +100,7 @@ export default function UserPage() {
           <div className="flex justify-between p-4">
             {data.user.avatarUrl ? (
               <img
-                className="w-32 h-32 -mt-20 border-4 border-white rounded-full dark:border-black"
+                className="object-cover w-32 h-32 -mt-20 border-4 border-white rounded-full dark:border-black"
                 src={data.user.avatarUrl}
                 alt="Avatar"
               />

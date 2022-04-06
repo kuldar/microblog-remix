@@ -111,7 +111,7 @@ export default function PostPage() {
             >
               {post.author.avatarUrl ? (
                 <img
-                  className="w-12 h-12 rounded-full"
+                  className="object-cover w-12 h-12 rounded-full"
                   src={post.author.avatarUrl}
                   alt={post.author.username}
                 />
@@ -204,7 +204,7 @@ export default function PostPage() {
               >
                 {user.avatarUrl ? (
                   <img
-                    className="w-12 h-12 mr-2 rounded-full"
+                    className="object-cover w-12 h-12 mr-2 rounded-full"
                     src={user.avatarUrl}
                     alt={user.username}
                   />

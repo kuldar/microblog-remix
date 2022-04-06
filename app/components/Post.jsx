@@ -7,7 +7,7 @@ const Post = ({ post }) => {
   const fetcher = useFetcher();
 
   return (
-    <div className="flex px-4 pt-4 pb-3 transition-colors border-b border-gray-200 hover:bg-gray-100/50 dark:border-gray-800 dark:hover:bg-gray-900/30">
+    <div className="flex px-4 pt-4 pb-3 transition-colors border-b border-gray-200 hover:bg-gray-100/50 dark:border-gray-800 dark:hover:bg-gray-800/40">
       {/* Avatar  */}
       <Link
         to={`/users/${post.author.username}`}
@@ -16,7 +16,7 @@ const Post = ({ post }) => {
         {post.author.avatarUrl ? (
           <img
             src={post.author.avatarUrl}
-            className="w-12 h-12 rounded-full"
+            className="object-cover w-12 h-12 rounded-full"
             alt={post.author.name || post.author.username}
           />
         ) : (

@@ -54,7 +54,7 @@ export default function PostsPage() {
         <div className="flex p-4 border-b border-gray-200 dark:border-gray-800">
           {user.avatarUrl ? (
             <img
-              className="w-12 h-12 mr-2 rounded-full"
+              className="object-cover w-12 h-12 mr-2 rounded-full"
               src={user.avatarUrl}
               alt={user.username}
             />
@@ -85,19 +85,19 @@ export default function PostsPage() {
             </button>
           </Form>
         </div>
+
+        <div className="h-2 bg-gray-100 border-b border-gray-200 dark:border-gray-800 dark:bg-gray-900" />
+
+        {posts.length === 0 ? (
+          <p>No posts</p>
+        ) : (
+          <>
+            {posts.map((post) => (
+              <Post key={post.id} post={post} />
+            ))}
+          </>
+        )}
       </div>
-
-      <div className="h-2 bg-gray-100 border-b border-gray-200 dark:border-gray-800 dark:bg-gray-900" />
-
-      {posts.length === 0 ? (
-        <p>No posts</p>
-      ) : (
-        <>
-          {posts.map((post) => (
-            <Post key={post.id} post={post} />
-          ))}
-        </>
-      )}
     </>
   );
 }
