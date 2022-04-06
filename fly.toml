@@ -1,4 +1,4 @@
-app = "microblog-remix-7974"
+app = "microblog"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = [ ]
