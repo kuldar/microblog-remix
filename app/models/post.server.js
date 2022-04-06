@@ -75,6 +75,38 @@ export async function getUserPosts({ username, userId }) {
   }
 }
 
+export async function getUserLikedPosts({ username, userId }) {
+  if (userId) {
+    return prisma.post.findMany({
+      where: { likes: { some: { user: { is: { username } } } } },
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+        author: true,
+        likes: {
+          where: { userId },
+          select: { createdAt: true },
+        },
+        _count: { select: { likes: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+  } else {
+    return prisma.post.findMany({
+      where: { likes: { some: { user: { is: { username } } } } },
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+        author: true,
+        _count: { select: { likes: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+  }
+}
+
 export function createPost({ body, userId }) {
   return prisma.post.create({
     data: {

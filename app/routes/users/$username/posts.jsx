@@ -1,19 +1,19 @@
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+
+import { getUserPosts } from "~/models/post.server";
+import { getUserId } from "~/session.server";
 import Post from "~/components/Post";
 
-const posts = [
-  {
-    id: "1",
-    body: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum lacinia malesuada diam, sed faucibus ligula porttitor at. \n Aliquam erat volutpat. Sed et lectus ut nisi bibendum tincidunt.`,
-    createdAt: "2022-04-05T13:42:48.221Z",
-    author: {
-      name: "Mr Example",
-      username: "example",
-      avatarUrl: "https://source.boringavatars.com/marble/140",
-    },
-  },
-];
+export const loader = async ({ request, params }) => {
+  const userId = await getUserId(request);
+  const posts = await getUserPosts({ username: params.username, userId });
+  return json({ posts });
+};
 
-export default function UserPostsReplies() {
+export default function UserPosts() {
+  const { posts } = useLoaderData();
+
   return (
     <>
       {posts.map((post) => (
