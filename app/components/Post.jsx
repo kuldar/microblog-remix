@@ -59,7 +59,7 @@ const Post = ({ post }) => {
             <div className="flex items-center justify-center w-8 h-8 transition-colors rounded-full group-hover:bg-blue-100/80 dark:group-hover:bg-blue-900/40">
               <CommentIcon />
             </div>
-            <span className="px-2 transition-colors">2</span>
+            <span className="px-2 transition-colors">0</span>
           </a>
 
           {/* Reposts  */}
@@ -70,7 +70,7 @@ const Post = ({ post }) => {
             <div className="flex items-center justify-center w-8 h-8 transition-colors rounded-full group-hover:bg-green-100/80 dark:group-hover:bg-green-900/40">
               <RepostIcon />
             </div>
-            <span className="px-2 transition-colors">2</span>
+            <span className="px-2 transition-colors">0</span>
           </a>
 
           {/* Likes  */}

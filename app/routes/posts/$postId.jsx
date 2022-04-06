@@ -144,7 +144,7 @@ export default function PostPage() {
           {/* Stats */}
           <div className="flex py-3 space-x-4 border-t border-b border-gray-200 dark:border-gray-800">
             <a className="flex space-x-2 group" href="#">
-              <div className="font-bold">2</div>
+              <div className="font-bold">0</div>
               <div className="text-gray-500 group-hover:underline">Reposts</div>
             </a>
             <a className="flex space-x-2 group" href="#">
