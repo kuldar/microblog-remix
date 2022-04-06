@@ -53,6 +53,18 @@ export async function getUserFeed(userId) {
     take: 10,
   });
 
+  // const rawPosts = await prisma.$queryRaw`
+  //   SELECT *,
+  //   EXISTS(
+  //     SELECT userId, postId FROM PostLike like
+  //     JOIN User user
+  //     ON user.id = like.userId
+  //     AND like.postId = post.id
+  //     WHERE user.username = 'mike'
+  //   ) AS liked FROM Post post;
+  // `;
+
+  // return rawPosts;
   return posts;
 }
 

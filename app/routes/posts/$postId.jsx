@@ -11,7 +11,12 @@ import invariant from "tiny-invariant";
 
 import { formatDate, useOptionalUser } from "~/utils";
 import { requireUserId } from "~/session.server";
-import { getPost, createPost } from "~/models/post.server";
+import {
+  getPost,
+  createPost,
+  likePost,
+  unlikePost,
+} from "~/models/post.server";
 import {
   ArrowLeftIcon,
   CommentIcon,
@@ -19,6 +24,7 @@ import {
   RepostIcon,
 } from "~/components/Icons";
 
+// Loader
 export const loader = async ({ request, params }) => {
   invariant(params.postId, "postId not found");
 
@@ -29,22 +35,39 @@ export const loader = async ({ request, params }) => {
   return json({ post });
 };
 
-export const action = async ({ request }) => {
+// Action
+export const action = async ({ request, params }) => {
   const userId = await requireUserId(request);
 
   const formData = await request.formData();
-  const body = formData.get("body");
+  const { _action } = Object.fromEntries(formData);
 
-  if (typeof body !== "string" || body.length === 0) {
-    return json({ errors: { body: "Body is required" } }, { status: 400 });
+  if (_action === "like") {
+    const postLike = await likePost({ postId: params.postId, userId });
+    if (!postLike) return json({ error: "Problem with liking the post" });
+    return json({ ok: true });
   }
 
-  const post = await createPost({ body, userId });
+  if (_action === "unlike") {
+    await unlikePost({ postId: params.postId, userId });
+    return json({});
+  }
 
-  return json({ post });
+  if (_action === "comment") {
+    const body = formData.get("body");
+
+    if (typeof body !== "string" || body.length === 0) {
+      return json({ errors: { body: "Body is required" } }, { status: 400 });
+    }
+
+    const post = await createPost({ body, userId });
+
+    return json({ post });
+  }
 };
 
-export default function NoteDetailsPage() {
+// Post Page
+export default function PostPage() {
   const user = useOptionalUser();
   const { post } = useLoaderData();
   const navigate = useNavigate();
@@ -112,7 +135,6 @@ export default function NoteDetailsPage() {
 
           {/* Timestamp */}
           <div className="py-2 text-gray-500 border-b border-gray-200 dark:border-gray-800">
-            {/* 9:11 AM · Aug 4, 2021 */}
             {formatDate(post.createdAt)}
           </div>
 
@@ -185,6 +207,8 @@ export default function NoteDetailsPage() {
                 <div id="body-error">{actionData.errors.body}</div>
               )}
               <button
+                name="_action"
+                value="comment"
                 className="px-5 py-3 mt-1 font-bold leading-none text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
                 type="submit"
               >

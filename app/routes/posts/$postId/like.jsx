@@ -1,4 +1,4 @@
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 
 import { requireUserId } from "~/session.server";
 import { likePost, unlikePost } from "~/models/post.server";
@@ -11,7 +11,10 @@ export const action = async ({ request, params }) => {
 
   if (_action === "like") {
     const postLike = await likePost({ postId: params.postId, userId });
-    return json({ postLike });
+    if (!postLike) return json({ error: "Some error" });
+    return json({ ok: true });
+    // return redirect(`/posts/${params.postId}`);
+    // return json({ postLike });
   }
 
   if (_action === "unlike") {
