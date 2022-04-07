@@ -10,6 +10,9 @@ processes = []
   cmd = "start.sh"
   entrypoint = "sh"
 
+[deploy]
+  release_command = "npx prisma migrate deploy"
+
 [mounts]
   source = "data"
   destination = "/data"
