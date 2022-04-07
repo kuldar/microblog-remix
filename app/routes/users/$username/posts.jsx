@@ -19,9 +19,13 @@ export default function UserPosts() {
 
   return (
     <>
-      {posts.map((post) => (
-        <Post key={post.id} post={post} />
-      ))}
+      {!posts || posts.length === 0 ? (
+        <div className="w-full pt-12 text-center text-gray-300 dark:text-gray-500">
+          No posts
+        </div>
+      ) : (
+        posts?.map((post) => <Post key={post.id} post={post} />)
+      )}
     </>
   );
 }

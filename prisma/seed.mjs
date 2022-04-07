@@ -158,21 +158,29 @@ async function seed() {
   const postLike1 = await db.postLike.create({
     data: {
       postId: post1.id,
-      userId: saulUser.id,
+      userId: laloUser.id,
     },
   });
 
   const postLike2 = await db.postLike.create({
     data: {
       postId: post1.id,
-      userId: laloUser.id,
+      userId: mikeUser.id,
+    },
+  });
+
+  const post1Reply = await db.post.create({
+    data: {
+      replyToId: post1.id,
+      authorId: mikeUser.id,
+      body: "Well I don't know about that..",
     },
   });
 
   const postLike3 = await db.postLike.create({
     data: {
-      postId: post2.id,
-      userId: laloUser.id,
+      postId: post1Reply.id,
+      userId: saulUser.id,
     },
   });
 

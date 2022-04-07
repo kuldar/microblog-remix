@@ -83,7 +83,7 @@ export async function getUserFollowings({ username, userId }) {
 }
 
 // Get User By Username
-export async function getUserByUsername({ username, userId }) {
+export async function getUserByUsername({ username, userId = "" }) {
   return prisma.user.findUnique({
     where: { username },
     select: {

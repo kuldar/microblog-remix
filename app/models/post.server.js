@@ -83,6 +83,15 @@ export function getPost({ id, userId }) {
           select: { createdAt: true },
         },
         _count: { select: { likes: true, reposts: true } },
+        repost: {
+          select: {
+            id: true,
+            body: true,
+            createdAt: true,
+            author: { select: { username: true, name: true, avatarUrl: true } },
+            _count: { select: { likes: true, reposts: true } },
+          },
+        },
       },
     });
   } else {
@@ -94,6 +103,15 @@ export function getPost({ id, userId }) {
         createdAt: true,
         author: true,
         _count: { select: { likes: true, reposts: true } },
+        repost: {
+          select: {
+            id: true,
+            body: true,
+            createdAt: true,
+            author: { select: { username: true, name: true, avatarUrl: true } },
+            _count: { select: { likes: true, reposts: true } },
+          },
+        },
       },
     });
   }

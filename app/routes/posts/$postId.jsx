@@ -27,6 +27,7 @@ import {
   CommentIcon,
   LikeIcon,
   RepostIcon,
+  SmallRepostIcon,
 } from "~/components/Icons";
 
 // Loader
@@ -86,7 +87,11 @@ export const action = async ({ request, params }) => {
 // Post Page
 export default function PostPage() {
   const user = useOptionalUser();
-  const { post } = useLoaderData();
+  const { post: _post } = useLoaderData();
+  console.log({ _post });
+  const isRepost = _post.repost && !_post.body;
+  const post = _post.repost && !_post.body ? _post.repost : _post;
+
   const navigate = useNavigate();
   const fetcher = useFetcher();
 
@@ -121,6 +126,18 @@ export default function PostPage() {
       <div className="overflow-y-auto">
         {/* Post */}
         <div className="flex flex-col p-4 border-b border-gray-200 dark:border-gray-800">
+          {isRepost && (
+            <Link
+              to={`/users/${_post.author.username}`}
+              className="flex items-center self-start mb-4 ml-2 text-gray-500 group"
+            >
+              <SmallRepostIcon />
+              <div className="ml-1 text-sm font-medium text-gray-500 group-hover:underline">
+                {_post.author.name || _post.author.username} reposted
+              </div>
+            </Link>
+          )}
+
           <div className="flex items-center mb-2">
             <Link
               to={`/users/${post.author.username}`}
@@ -160,9 +177,10 @@ export default function PostPage() {
 
           {/* Text */}
           <div className="mb-2 space-y-4 text-xl leading-tight">
-            {post.body.split("\n").map((item, key) => {
-              return <p key={key}>{item}</p>;
-            })}
+            {post.body &&
+              post.body.split("\n").map((item, key) => {
+                return <p key={key}>{item}</p>;
+              })}
           </div>
 
           {/* Timestamp */}
