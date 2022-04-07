@@ -55,6 +55,7 @@ export function getPost({ id, userId }) {
 
 export function getAllPosts() {
   return prisma.post.findMany({
+    where: { replyToId: null },
     select: {
       id: true,
       body: true,
@@ -113,13 +114,23 @@ export async function getUserPosts({ username, userId }) {
     });
   } else {
     return prisma.post.findMany({
-      where: { author: { is: { username } } },
+      where: { AND: [{ author: { is: { username } } }, { replyToId: null }] },
       select: {
         id: true,
         body: true,
         createdAt: true,
         author: true,
         _count: { select: { likes: true, reposts: true, replies: true } },
+        repost: {
+          select: {
+            id: true,
+            body: true,
+            createdAt: true,
+            author: { select: { username: true, name: true, avatarUrl: true } },
+            replyTo: { select: { id: true, author: true } },
+            _count: { select: { likes: true, reposts: true, replies: true } },
+          },
+        },
       },
       orderBy: { updatedAt: "desc" },
     });
@@ -150,7 +161,7 @@ export async function getUserPostsReplies({ username, userId }) {
     });
   } else {
     return prisma.post.findMany({
-      where: { author: { is: { username } } },
+      where: { AND: [{ author: { is: { username } } }, { repostId: null }] },
       select: {
         id: true,
         body: true,
@@ -158,6 +169,16 @@ export async function getUserPostsReplies({ username, userId }) {
         author: true,
         replyTo: { select: { id: true, author: true } },
         _count: { select: { likes: true, reposts: true, replies: true } },
+        repost: {
+          select: {
+            id: true,
+            body: true,
+            createdAt: true,
+            author: { select: { username: true, name: true, avatarUrl: true } },
+            replyTo: { select: { id: true, author: true } },
+            _count: { select: { likes: true, reposts: true, replies: true } },
+          },
+        },
       },
       orderBy: { updatedAt: "desc" },
     });
