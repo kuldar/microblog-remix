@@ -12,7 +12,10 @@ export const loader = async ({ request, params }) => {
   const userId = await getUserId(request);
   invariant(params.username, "username not found");
   const user = await getUserByUsername({ username: params.username, userId });
-  const followers = await getUserFollowers(params.username);
+  const followers = await getUserFollowers({
+    username: params.username,
+    userId,
+  });
 
   if (!user) {
     throw new Response("Not Found", { status: 404 });

@@ -23,7 +23,7 @@ export async function isFollowing({ followedId, followerId }) {
 }
 
 // Get User Followers
-export async function getUserFollowers(username) {
+export async function getUserFollowers({ username, userId }) {
   const user = await prisma.user.findUnique({
     where: { username },
     include: { followers: true },
@@ -35,16 +35,25 @@ export async function getUserFollowers(username) {
   return prisma.user.findMany({
     where: { id: { in: followerIds } },
     select: {
+      id: true,
       avatarUrl: true,
       username: true,
       name: true,
       bio: true,
+      followings: {
+        where: { followedId: userId },
+        select: { createdAt: true },
+      },
+      followers: {
+        where: { followerId: userId },
+        select: { createdAt: true },
+      },
     },
   });
 }
 
 // Get User Followings
-export async function getUserFollowings(username) {
+export async function getUserFollowings({ username, userId }) {
   const user = await prisma.user.findUnique({
     where: { username },
     include: { followings: true },
@@ -56,10 +65,19 @@ export async function getUserFollowings(username) {
   return prisma.user.findMany({
     where: { id: { in: followingIds } },
     select: {
+      id: true,
       avatarUrl: true,
       username: true,
       name: true,
       bio: true,
+      followings: {
+        where: { followedId: userId },
+        select: { createdAt: true },
+      },
+      followers: {
+        where: { followerId: userId },
+        select: { createdAt: true },
+      },
     },
   });
 }
