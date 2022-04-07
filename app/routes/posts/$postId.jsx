@@ -95,7 +95,7 @@ export default function PostPage() {
   React.useEffect(() => {
     if (actionData?.errors?.body) {
       bodyRef.current?.focus();
-    } else {
+    } else if (bodyRef.current) {
       bodyRef.current.value = "";
     }
   }, [actionData]);
