@@ -10,10 +10,9 @@ import {
 import invariant from "tiny-invariant";
 
 import { useOptionalUser } from "~/utils";
-import { getUserId, requireUserId } from "~/session.server";
+import { requireUserId, getUserId } from "~/session.server";
 import {
   getUserByUsername,
-  isFollowing,
   followUser,
   unfollowUser,
 } from "~/models/user.server";
@@ -26,19 +25,13 @@ import {
 
 // Loader
 export const loader = async ({ request, params }) => {
-  invariant(params.username, "username not found");
   const userId = await getUserId(request);
-  const user = await getUserByUsername(params.username);
-  const followed = await isFollowing({
-    followedId: user.id,
-    followerId: userId,
-  });
+  invariant(params.username, "username not found");
+  const user = await getUserByUsername({ username: params.username, userId });
 
-  if (!user) {
-    throw new Response("Not Found", { status: 404 });
-  }
+  if (!user) throw new Response("Not Found", { status: 404 });
 
-  return json({ user, followed });
+  return json({ user });
 };
 
 // Action
@@ -121,7 +114,7 @@ export default function UserPage() {
               )}
               {user && user.id !== data.user.id && (
                 <>
-                  {data.followed ? (
+                  {data.user.followers?.length > 0 ? (
                     <Form method="post">
                       <input type="hidden" name="userId" value={data.user.id} />
                       <button
@@ -162,7 +155,7 @@ export default function UserPage() {
                 @{data.user.username}
               </div>
 
-              {false && (
+              {data.user.followings.length > 0 && (
                 <div className="ml-2 rounded bg-gray-200 px-1.5 text-sm text-gray-500 dark:bg-gray-800">
                   Follows you
                 </div>

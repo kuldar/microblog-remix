@@ -3,6 +3,7 @@ import { json } from "@remix-run/node";
 import {
   Form,
   Link,
+  Outlet,
   useLoaderData,
   useActionData,
   useNavigate,
@@ -10,7 +11,7 @@ import {
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import Post from "~/components/Post";
+// import Post from "~/components/Post";
 import { formatDate, useOptionalUser } from "~/utils";
 import { requireUserId, getUserId } from "~/session.server";
 import {
@@ -171,24 +172,24 @@ export default function PostPage() {
 
           {/* Stats */}
           <div className="flex py-3 space-x-4 border-t border-b border-gray-200 dark:border-gray-800">
-            <a className="flex space-x-2 group" href="#">
+            <Link to="reposts" className="flex space-x-2 group" href="#">
               <div className="font-bold">{post._count.reposts}</div>
               <div className="text-gray-500 group-hover:underline">
                 {post._count.reposts === 1 ? "Repost" : "Reposts"}
               </div>
-            </a>
-            <a className="flex space-x-2 group" href="#">
+            </Link>
+            <Link to="likes" className="flex space-x-2 group" href="#">
               <div className="font-bold">{post._count.likes}</div>
               <div className="text-gray-500 group-hover:underline">
                 {post._count.likes === 1 ? "Like" : "Likes"}
               </div>
-            </a>
+            </Link>
           </div>
 
           {/* Actions */}
           <div className="flex py-2 mb-3 space-x-10 border-b border-gray-200 dark:border-gray-800">
             <Link
-              to="#"
+              to="."
               className="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-full hover:bg-blue-100/50 hover:text-blue-500 dark:text-gray-600 dark:hover:bg-blue-900/50"
             >
               <CommentIcon />
@@ -289,11 +290,7 @@ export default function PostPage() {
         <div className="h-2 bg-gray-100 border-b border-gray-200 dark:border-gray-800 dark:bg-gray-900" />
 
         {/* Replies */}
-        <div>
-          {post.replies?.map((reply) => (
-            <Post key={reply.id} post={reply} />
-          ))}
-        </div>
+        <Outlet />
       </div>
     </>
   );

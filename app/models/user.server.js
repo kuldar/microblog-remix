@@ -22,11 +22,70 @@ export async function isFollowing({ followedId, followerId }) {
   });
 }
 
+// Get User Followers
+export async function getUserFollowers(username) {
+  const user = await prisma.user.findUnique({
+    where: { username },
+    include: { followers: true },
+  });
+
+  let followerIds = [];
+  user.followers.map((follow) => followerIds.push(follow.followerId));
+
+  return prisma.user.findMany({
+    where: { id: { in: followerIds } },
+    select: {
+      avatarUrl: true,
+      username: true,
+      name: true,
+      bio: true,
+    },
+  });
+}
+
+// Get User Followings
+export async function getUserFollowings(username) {
+  const user = await prisma.user.findUnique({
+    where: { username },
+    include: { followings: true },
+  });
+
+  let followingIds = [];
+  user.followings.map((follow) => followingIds.push(follow.followedId));
+
+  return prisma.user.findMany({
+    where: { id: { in: followingIds } },
+    select: {
+      avatarUrl: true,
+      username: true,
+      name: true,
+      bio: true,
+    },
+  });
+}
+
 // Get User By Username
-export async function getUserByUsername(username) {
+export async function getUserByUsername({ username, userId }) {
   return prisma.user.findUnique({
     where: { username },
-    include: {
+    select: {
+      id: true,
+      username: true,
+      name: true,
+      bio: true,
+      avatarUrl: true,
+      coverUrl: true,
+      createdAt: true,
+      location: true,
+      website: true,
+      followings: {
+        where: { followedId: userId },
+        select: { createdAt: true },
+      },
+      followers: {
+        where: { followerId: userId },
+        select: { createdAt: true },
+      },
       _count: {
         select: {
           followers: true,

@@ -1,5 +1,69 @@
 import { prisma } from "~/db.server";
 
+export function getPostLikes({ id, userId }) {
+  return prisma.user.findMany({
+    where: {
+      likes: { some: { post: { id } } },
+    },
+  });
+}
+
+export async function getPostReposters({ id, userId }) {
+  let reposterIds = [];
+
+  const post = await prisma.post.findFirst({
+    where: { id },
+    select: { reposts: true },
+  });
+
+  post.reposts.map((repost) => reposterIds.push(repost.authorId));
+
+  return prisma.user.findMany({
+    where: { id: { in: reposterIds } },
+    select: {
+      avatarUrl: true,
+      username: true,
+      name: true,
+      bio: true,
+    },
+  });
+}
+
+export function getPostReplies({ id, userId }) {
+  if (userId) {
+    return prisma.post.findMany({
+      where: { replyToId: id },
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+        author: true,
+        likes: {
+          where: { userId },
+          select: { createdAt: true },
+        },
+        replyTo: { select: { id: true, author: true } },
+        reposts: {
+          where: { authorId: userId },
+          select: { createdAt: true },
+        },
+        _count: { select: { likes: true, reposts: true } },
+      },
+    });
+  } else {
+    return prisma.post.findMany({
+      where: { replyToId: id },
+      select: {
+        id: true,
+        body: true,
+        createdAt: true,
+        author: true,
+        _count: { select: { likes: true, reposts: true } },
+      },
+    });
+  }
+}
+
 export function getPost({ id, userId }) {
   if (userId) {
     return prisma.post.findFirst({
@@ -14,24 +78,6 @@ export function getPost({ id, userId }) {
           select: { createdAt: true },
         },
         replyTo: { select: { id: true, author: true } },
-        replies: {
-          select: {
-            id: true,
-            body: true,
-            createdAt: true,
-            author: true,
-            likes: {
-              where: { userId },
-              select: { createdAt: true },
-            },
-            reposts: {
-              where: { authorId: userId },
-              select: { createdAt: true },
-            },
-            _count: { select: { likes: true, reposts: true, replies: true } },
-          },
-          orderBy: { updatedAt: "desc" },
-        },
         reposts: {
           where: { authorId: userId },
           select: { createdAt: true },

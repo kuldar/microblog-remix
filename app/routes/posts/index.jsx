@@ -21,7 +21,10 @@ export const action = async ({ request }) => {
   const body = formData.get("body");
 
   if (typeof body !== "string" || body.length === 0) {
-    return json({ errors: { body: "Body is required" } }, { status: 400 });
+    return json(
+      { errors: { body: "Got to write something.." } },
+      { status: 400 }
+    );
   }
 
   const post = await createPost({ body, userId });
@@ -77,7 +80,9 @@ export default function PostsPage() {
               className="px-2 py-3 text-xl bg-white outline-none dark:bg-black"
             />
             {actionData?.errors?.body && (
-              <div id="body-error">{actionData.errors.body}</div>
+              <div id="body-error" className="text-sm text-red-500">
+                {actionData.errors.body}
+              </div>
             )}
             <button
               type="submit"
