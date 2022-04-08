@@ -40,9 +40,10 @@ const Sidebar = () => {
     navLinkText: "hidden ml-4 lg:inline",
     userLink:
       "flex p-3 transition-colors rounded-full cursor-pointer hover:bg-blue-100/50 dark:hover:bg-blue-900/30",
-    avatar: "object-cover w-10 h-10 mr-3 bg-gray-100 rounded-full",
+    avatar:
+      "object-cover w-10 h-10 lg:mr-3 bg-gray-100 rounded-full flex-shrink-0",
     avatarPlaceholder:
-      "w-10 h-10 mr-3 bg-gray-100 rounded-full dark:bg-gray-900",
+      "w-10 h-10 lg:mr-3 bg-gray-100 rounded-full dark:bg-gray-900 flex-shrink-0",
     name: "font-bold leading-tight",
     username: "leading-tight text-gray-500",
   };
