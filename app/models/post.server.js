@@ -123,28 +123,28 @@ export function getPost({ id, userId }) {
 }
 
 // Get All Posts
-export function getAllPosts() {
-  return prisma.post.findMany({
-    where: { replyToId: null },
-    select: {
-      id: true,
-      body: true,
-      createdAt: true,
-      author: true,
-      _count: { select: { likes: true, reposts: true } },
-      repost: {
-        select: {
-          id: true,
-          body: true,
-          createdAt: true,
-          author: { select: { username: true, name: true, avatarUrl: true } },
-          _count: { select: { likes: true, reposts: true } },
-        },
-      },
-    },
-    orderBy: { updatedAt: "desc" },
-  });
-}
+// export function getAllPosts() {
+//   return prisma.post.findMany({
+//     where: { replyToId: null },
+//     select: {
+//       id: true,
+//       body: true,
+//       createdAt: true,
+//       author: true,
+//       _count: { select: { likes: true, reposts: true } },
+//       repost: {
+//         select: {
+//           id: true,
+//           body: true,
+//           createdAt: true,
+//           author: { select: { username: true, name: true, avatarUrl: true } },
+//           _count: { select: { likes: true, reposts: true } },
+//         },
+//       },
+//     },
+//     orderBy: { updatedAt: "desc" },
+//   });
+// }
 
 // Get Latest Posts
 export async function getLatestPosts({ limit = 10, userId }) {
@@ -172,6 +172,11 @@ export async function getLatestPosts({ limit = 10, userId }) {
             body: true,
             createdAt: true,
             author: { select: { username: true, name: true, avatarUrl: true } },
+            reposts: {
+              where: { authorId: userId },
+              select: { createdAt: true },
+            },
+            likes: { where: { userId }, select: { createdAt: true } },
             _count: { select: { likes: true, reposts: true, replies: true } },
           },
         },

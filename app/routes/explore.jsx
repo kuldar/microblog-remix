@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { useLoaderData, NavLink, Outlet } from "@remix-run/react";
+import { NavLink, Outlet } from "@remix-run/react";
 
 import { getLatestPosts } from "~/models/post.server";
 import { getUserId } from "~/session.server";
@@ -13,7 +13,6 @@ export const loader = async ({ request }) => {
 
 // Explore Page
 export default function ExplorePage() {
-  const { posts } = useLoaderData();
   return (
     <>
       <div className="flex items-center flex-shrink-0 px-4 py-3 border-b border-gray-200 dark:border-gray-800">
