@@ -50,7 +50,7 @@ export function getPostReplies({ id, userId }) {
           where: { authorId: userId },
           select: { createdAt: true },
         },
-        _count: { select: { likes: true, reposts: true } },
+        _count: { select: { likes: true, reposts: true, replies: true } },
       },
     });
   } else {
@@ -61,7 +61,7 @@ export function getPostReplies({ id, userId }) {
         body: true,
         createdAt: true,
         author: true,
-        _count: { select: { likes: true, reposts: true } },
+        _count: { select: { likes: true, reposts: true, replies: true } },
       },
     });
   }
@@ -86,14 +86,14 @@ export function getPost({ id, userId }) {
           where: { authorId: userId },
           select: { createdAt: true },
         },
-        _count: { select: { likes: true, reposts: true } },
+        _count: { select: { likes: true, reposts: true, replies: true } },
         repost: {
           select: {
             id: true,
             body: true,
             createdAt: true,
             author: { select: { username: true, name: true, avatarUrl: true } },
-            _count: { select: { likes: true, reposts: true } },
+            _count: { select: { likes: true, reposts: true, replies: true } },
           },
         },
       },
@@ -106,7 +106,7 @@ export function getPost({ id, userId }) {
         body: true,
         createdAt: true,
         author: true,
-        _count: { select: { likes: true, reposts: true } },
+        _count: { select: { likes: true, reposts: true, replies: true } },
         replyTo: { select: { id: true, author: true } },
         repost: {
           select: {
@@ -114,37 +114,13 @@ export function getPost({ id, userId }) {
             body: true,
             createdAt: true,
             author: { select: { username: true, name: true, avatarUrl: true } },
-            _count: { select: { likes: true, reposts: true } },
+            _count: { select: { likes: true, reposts: true, replies: true } },
           },
         },
       },
     });
   }
 }
-
-// Get All Posts
-// export function getAllPosts() {
-//   return prisma.post.findMany({
-//     where: { replyToId: null },
-//     select: {
-//       id: true,
-//       body: true,
-//       createdAt: true,
-//       author: true,
-//       _count: { select: { likes: true, reposts: true } },
-//       repost: {
-//         select: {
-//           id: true,
-//           body: true,
-//           createdAt: true,
-//           author: { select: { username: true, name: true, avatarUrl: true } },
-//           _count: { select: { likes: true, reposts: true } },
-//         },
-//       },
-//     },
-//     orderBy: { updatedAt: "desc" },
-//   });
-// }
 
 // Get Latest Posts
 export async function getLatestPosts({ limit = 10, userId }) {
@@ -339,7 +315,7 @@ export async function getUserLikedPosts({ username, userId }) {
           where: { authorId: userId },
           select: { createdAt: true },
         },
-        _count: { select: { likes: true, reposts: true } },
+        _count: { select: { likes: true, reposts: true, replies: true } },
       },
       orderBy: { updatedAt: "desc" },
     });
@@ -351,7 +327,7 @@ export async function getUserLikedPosts({ username, userId }) {
         body: true,
         createdAt: true,
         author: true,
-        _count: { select: { likes: true, reposts: true } },
+        _count: { select: { likes: true, reposts: true, replies: true } },
       },
       orderBy: { updatedAt: "desc" },
     });
