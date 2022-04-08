@@ -96,7 +96,9 @@ export default function PostsPage() {
         <div className="h-2 bg-gray-100 border-b border-gray-200 dark:border-gray-800 dark:bg-gray-900" />
 
         {posts.length === 0 ? (
-          <p>No posts</p>
+          <div className="w-full pt-12 text-center text-gray-300 dark:text-gray-500">
+            No posts
+          </div>
         ) : (
           <>
             {posts.map((post) => (

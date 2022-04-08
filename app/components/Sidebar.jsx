@@ -3,6 +3,7 @@ import { useOptionalUser } from "~/utils";
 import {
   Logo,
   HomeIcon,
+  ExploreIcon,
   UserIcon,
   SettingsIcon,
   EmailIcon,
@@ -14,11 +15,13 @@ const Sidebar = () => {
 
   const userLinks = [
     { to: "/posts", icon: HomeIcon, text: "Home" },
+    { to: "/explore", icon: ExploreIcon, text: "Explore" },
     { to: `/users/${user?.username}`, icon: UserIcon, text: "Profile" },
     { to: "/settings", icon: SettingsIcon, text: "Settings" },
   ];
 
   const guestLinks = [
+    { to: "/explore", icon: ExploreIcon, text: "Explore" },
     { to: "/join", icon: EmailIcon, text: "Join" },
     { to: "/login", icon: KeyIcon, text: "Log In" },
   ];

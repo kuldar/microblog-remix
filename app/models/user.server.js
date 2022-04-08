@@ -2,6 +2,45 @@ import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
 
+// Get Latest Users
+export async function getLatestUsers({ limit = 10, userId }) {
+  if (userId) {
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      select: {
+        id: true,
+        avatarUrl: true,
+        username: true,
+        name: true,
+        bio: true,
+        followings: {
+          where: { followedId: userId },
+          select: { createdAt: true },
+        },
+        followers: {
+          where: { followerId: userId },
+          select: { createdAt: true },
+        },
+      },
+    });
+    return users;
+  } else {
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      select: {
+        id: true,
+        avatarUrl: true,
+        username: true,
+        name: true,
+        bio: true,
+      },
+    });
+    return users;
+  }
+}
+
 // Get User By ID
 export async function getUserById({ id }) {
   return prisma.user.findUnique({
