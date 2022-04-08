@@ -76,35 +76,59 @@ export async function getUserFollowings({ username, userId }) {
 
 // Get User By Username
 export async function getUserByUsername({ username, userId }) {
-  return prisma.user.findUnique({
-    where: { username },
-    select: {
-      id: true,
-      username: true,
-      name: true,
-      bio: true,
-      avatarUrl: true,
-      coverUrl: true,
-      createdAt: true,
-      location: true,
-      website: true,
-      followings: {
-        where: { followedId: userId },
-        select: { createdAt: true },
-      },
-      followers: {
-        where: { followerId: userId },
-        select: { createdAt: true },
-      },
-      _count: {
-        select: {
-          followers: true,
-          followings: true,
-          posts: true,
+  if (userId) {
+    return prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        bio: true,
+        avatarUrl: true,
+        coverUrl: true,
+        createdAt: true,
+        location: true,
+        website: true,
+        followings: {
+          where: { followedId: userId },
+          select: { createdAt: true },
+        },
+        followers: {
+          where: { followerId: userId },
+          select: { createdAt: true },
+        },
+        _count: {
+          select: {
+            followers: true,
+            followings: true,
+            posts: true,
+          },
         },
       },
-    },
-  });
+    });
+  } else {
+    return prisma.user.findUnique({
+      where: { username },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        bio: true,
+        avatarUrl: true,
+        coverUrl: true,
+        createdAt: true,
+        location: true,
+        website: true,
+        _count: {
+          select: {
+            followers: true,
+            followings: true,
+            posts: true,
+          },
+        },
+      },
+    });
+  }
 }
 
 // Get User Feed

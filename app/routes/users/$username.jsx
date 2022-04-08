@@ -155,7 +155,7 @@ export default function UserPage() {
                 @{data.user.username}
               </div>
 
-              {data.user.followings.length > 0 && (
+              {data.user.followings?.length > 0 && (
                 <div className="ml-2 rounded bg-gray-200 px-1.5 text-sm text-gray-500 dark:bg-gray-800">
                   Follows you
                 </div>
