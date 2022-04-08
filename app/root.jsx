@@ -39,9 +39,9 @@ export default function App() {
         <Links />
       </head>
       <body className="flex text-gray-900 bg-white dark:bg-black dark:text-white">
-        <div className="flex h-screen mx-auto">
+        <div className="flex flex-1 h-screen mx-auto md:flex-initial">
           <Sidebar />
-          <main className="flex w-[600px] flex-col border-r border-gray-200 dark:border-gray-800">
+          <main className="flex w-full flex-col border-r border-gray-200 dark:border-gray-800 md:w-[600px]">
             <Outlet />
           </main>
         </div>

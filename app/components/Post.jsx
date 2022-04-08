@@ -26,7 +26,7 @@ const Post = ({ post: _post }) => {
           </div>
         </Link>
       )}
-      <div className="flex">
+      <div className="flex max-w-full">
         {/* Avatar  */}
         <Link
           to={`/users/${post.author.username}`}
@@ -43,11 +43,14 @@ const Post = ({ post: _post }) => {
           )}
         </Link>
 
-        <div className="w-full">
+        <div className="flex-1 min-w-0">
           {/* Post header  */}
           <div className="flex">
-            <Link to={`/users/${post.author.username}`} className="group">
-              <span className="font-bold group-hover:underline">
+            <Link
+              to={`/users/${post.author.username}`}
+              className="flex flex-1 min-w-0 group whitespace-nowrap"
+            >
+              <span className="overflow-hidden font-bold text-ellipsis group-hover:underline">
                 {post.author.name || post.author.username}
               </span>
               <span className="ml-1 text-gray-500">
@@ -83,7 +86,7 @@ const Post = ({ post: _post }) => {
           </div>
 
           {/* Post footer  */}
-          <div className="flex mt-2 space-x-10">
+          <div className="flex mt-2 space-x-4 sm:space-x-10">
             {/* Comments  */}
             <Link
               to={`/posts/${post.id}`}

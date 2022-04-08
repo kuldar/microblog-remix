@@ -30,14 +30,14 @@ const Sidebar = () => {
 
   const styles = {
     sidebar:
-      "flex flex-col w-24 px-4 py-2 border-r border-gray-200 dark:border-gray-800 lg:w-64",
+      "flex flex-col w-auto px-0 sm:px-4 py-1 sm:py-2 border-r border-gray-200 dark:border-gray-800 lg:w-64",
     logo: "self-start block p-4 transition-colors rounded-full hover:bg-blue-100/50 dark:hover:bg-blue-900/30",
-    nav: "flex flex-col items-start self-stretch flex-1",
+    nav: "flex flex-col items-center lg:items-start self-stretch flex-1",
     navLink:
-      "flex items-center rounded-full bg-transparent py-4 pl-4 pr-5 text-xl font-bold leading-none transition-colors hover:bg-blue-100/50 dark:hover:bg-blue-900/30",
+      "flex items-center rounded-full bg-transparent p-4 text-xl font-bold leading-none transition-colors hover:bg-blue-100/50 dark:hover:bg-blue-900/30",
     navLinkActive: "text-blue-500",
     navLinkInactive: "text-gray-900 dark:text-white",
-    navLinkText: "hidden ml-4 lg:inline",
+    navLinkText: "hidden mr-1 ml-4 lg:inline",
     userLink:
       "flex p-3 transition-colors rounded-full cursor-pointer hover:bg-blue-100/50 dark:hover:bg-blue-900/30",
     avatar:
