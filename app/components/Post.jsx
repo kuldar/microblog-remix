@@ -48,7 +48,7 @@ const Post = ({ post: _post }) => {
           <div className="flex">
             <Link
               to={`/users/${post.author.username}`}
-              className="flex flex-1 min-w-0 group whitespace-nowrap"
+              className="flex min-w-0 flex-shrink-1 group whitespace-nowrap"
             >
               <span className="overflow-hidden font-bold text-ellipsis group-hover:underline">
                 {post.author.name || post.author.username}
