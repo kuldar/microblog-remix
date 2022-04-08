@@ -148,6 +148,7 @@ export async function getLatestPosts({ limit = 10, userId }) {
             body: true,
             createdAt: true,
             author: { select: { username: true, name: true, avatarUrl: true } },
+            replyTo: { select: { id: true, author: true } },
             reposts: {
               where: { authorId: userId },
               select: { createdAt: true },
@@ -175,6 +176,7 @@ export async function getLatestPosts({ limit = 10, userId }) {
             id: true,
             body: true,
             createdAt: true,
+            replyTo: { select: { id: true, author: true } },
             author: { select: { username: true, name: true, avatarUrl: true } },
             _count: { select: { likes: true, reposts: true, replies: true } },
           },
