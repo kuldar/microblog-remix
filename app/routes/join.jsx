@@ -12,14 +12,14 @@ import { validateEmail } from "~/utils";
 
 export const loader = async ({ request }) => {
   const userId = await getUserId(request);
-  if (userId) return redirect("/");
+  if (userId) return redirect("/posts");
   return json({});
 };
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const username = formData.get("username");
+  const email = formData.get("email").toLowerCase().trim();
+  const username = formData.get("username").toLowerCase().trim();
   const password = formData.get("password");
   const redirectTo = formData.get("redirectTo");
 
@@ -67,7 +67,7 @@ export const action = async ({ request }) => {
     );
   }
 
-  const existingUserEmail = await getUserByEmail(email);
+  const existingUserEmail = await getUserByEmail({ email });
   if (existingUserEmail) {
     return json(
       { errors: { email: "A user already exists with this email" } },
@@ -75,7 +75,7 @@ export const action = async ({ request }) => {
     );
   }
 
-  const existingUserUsername = await getUserByUsername(username);
+  const existingUserUsername = await getUserByUsername({ username });
   if (existingUserUsername) {
     return json(
       { errors: { username: "A user already exists with this username" } },
@@ -83,13 +83,16 @@ export const action = async ({ request }) => {
     );
   }
 
-  const user = await createUser(email, username, password);
+  const user = await createUser({ email, username, password });
 
   return createUserSession({
     request,
     userId: user.id,
     remember: false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
+    redirectTo:
+      typeof redirectTo === "string" && redirectTo !== ""
+        ? redirectTo
+        : "/posts",
   });
 };
 

@@ -3,23 +3,15 @@ import bcrypt from "bcryptjs";
 import { prisma } from "~/db.server";
 
 // Get User By ID
-export async function getUserById(id) {
+export async function getUserById({ id }) {
   return prisma.user.findUnique({
     where: { id },
   });
 }
 
 // Get User By Email
-export async function getUserByEmail(email) {
+export async function getUserByEmail({ email }) {
   return prisma.user.findUnique({ where: { email } });
-}
-
-// Is Following
-export async function isFollowing({ followedId, followerId }) {
-  if (!followedId || !followerId) return false;
-  return prisma.follow.findUnique({
-    where: { followerId_followedId: { followerId, followedId } },
-  });
 }
 
 // Get User Followers
@@ -83,7 +75,7 @@ export async function getUserFollowings({ username, userId }) {
 }
 
 // Get User By Username
-export async function getUserByUsername({ username, userId = "" }) {
+export async function getUserByUsername({ username, userId }) {
   return prisma.user.findUnique({
     where: { username },
     select: {
@@ -156,7 +148,7 @@ export async function getUserFeed(userId) {
 }
 
 // Create User
-export async function createUser(email, username, password) {
+export async function createUser({ email, username, password }) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return prisma.user.create({
