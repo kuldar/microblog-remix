@@ -14,7 +14,7 @@ export const loader = async ({ request }) => {
 
 export const action = async ({ request }) => {
   const formData = await request.formData();
-  const email = formData.get("email");
+  const email = formData.get("email").toLowerCase().trim();
   const password = formData.get("password");
   const redirectTo = formData.get("redirectTo");
   const remember = formData.get("remember");
