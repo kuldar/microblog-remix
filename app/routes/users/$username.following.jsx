@@ -3,13 +3,13 @@ import { Link, NavLink, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { getUserFollowings, getUserByUsername } from "~/models/user.server";
-import { getUserId } from "~/session.server";
+import { getSessionUserId } from "~/session.server";
 import { ArrowLeftIcon } from "~/components/Icons";
 import User from "~/components/User";
 
 // Loader
 export const loader = async ({ request, params }) => {
-  const userId = await getUserId(request);
+  const userId = await getSessionUserId(request);
   invariant(params.username, "username not found");
   const user = await getUserByUsername({ username: params.username, userId });
   const followings = await getUserFollowings({
@@ -32,9 +32,9 @@ export default function UserFollowingPage() {
       {/* Top */}
       <Link
         to={`/users/${data.user.username}`}
-        className="flex items-center flex-shrink-0 px-4 py-3"
+        className="flex flex-shrink-0 items-center px-4 py-3"
       >
-        <div className="flex items-center justify-center w-8 h-8">
+        <div className="flex h-8 w-8 items-center justify-center">
           <ArrowLeftIcon />
         </div>
 

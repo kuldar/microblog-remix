@@ -2,12 +2,12 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { getLatestPosts } from "~/models/post.server";
-import { getUserId } from "~/session.server";
+import { getSessionUserId } from "~/session.server";
 import Post from "~/components/Post";
 
 // Loader
 export const loader = async ({ request }) => {
-  const userId = await getUserId(request);
+  const userId = await getSessionUserId(request);
   const posts = await getLatestPosts({ userId });
   return json({ posts });
 };

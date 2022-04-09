@@ -3,14 +3,14 @@ import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 
 import { validateEmail, validatePassword } from "~/utils/validation";
-import { getUserId, createUserSession } from "~/session.server";
+import { getSessionUserId, createUserSession } from "~/session.server";
 import { getUserByLogin } from "~/models/user.server";
 
 // Loader
 export const loader = async ({ request }) => {
   // Redirect if user is already logged in
-  const userId = await getUserId(request);
-  if (userId) return redirect("/posts");
+  const sessionUserId = await getSessionUserId(request);
+  if (sessionUserId) return redirect("/posts");
 
   return json({});
 };

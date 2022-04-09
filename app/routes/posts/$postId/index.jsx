@@ -2,11 +2,11 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { getPostReplies } from "~/models/post.server";
-import { getUserId } from "~/session.server";
+import { getSessionUserId } from "~/session.server";
 import Post from "~/components/Post";
 
 export const loader = async ({ request, params }) => {
-  const userId = await getUserId(request);
+  const userId = await getSessionUserId(request);
   const posts = await getPostReplies({ id: params.postId, userId });
   return json({ posts });
 };

@@ -1,4 +1,5 @@
 import { Link, NavLink } from "@remix-run/react";
+
 import { useOptionalUser } from "~/utils/helpers";
 import {
   Logo,
@@ -10,6 +11,7 @@ import {
   KeyIcon,
 } from "./Icons";
 
+// Sidebar
 const Sidebar = () => {
   const user = useOptionalUser();
 
@@ -28,64 +30,55 @@ const Sidebar = () => {
 
   const links = user ? userLinks : guestLinks;
 
-  const styles = {
-    sidebar:
-      "flex flex-col w-auto px-0 sm:px-4 py-1 sm:py-2 border-r border-gray-200 dark:border-gray-800 lg:w-64",
-    logo: "self-start block p-4 transition-colors rounded-full hover:bg-blue-100/50 dark:hover:bg-blue-900/30",
-    nav: "flex flex-col items-center lg:items-start self-stretch flex-1",
-    navLink:
-      "flex items-center rounded-full bg-transparent p-4 text-xl font-bold leading-none transition-colors hover:bg-blue-100/50 dark:hover:bg-blue-900/30",
-    navLinkActive: "text-blue-500",
-    navLinkInactive: "text-gray-900 dark:text-white",
-    navLinkText: "hidden mr-1 ml-4 lg:inline",
-    userLink:
-      "flex p-3 transition-colors rounded-full cursor-pointer hover:bg-blue-100/50 dark:hover:bg-blue-900/30",
-    avatar:
-      "object-cover w-10 h-10 lg:mr-3 bg-gray-100 rounded-full flex-shrink-0",
-    avatarPlaceholder:
-      "w-10 h-10 lg:mr-3 bg-gray-100 rounded-full dark:bg-gray-900 flex-shrink-0",
-    name: "font-bold leading-tight",
-    username: "leading-tight text-gray-500",
-  };
-
   return (
-    <div className={styles.sidebar}>
-      <Link to="/" className={styles.logo}>
+    <div className="flex flex-col w-auto px-0 py-1 border-r border-gray-200 dark:border-gray-800 sm:px-4 sm:py-2 lg:w-64">
+      {/* Logo */}
+      <Link
+        to="/"
+        className="self-start block p-4 transition-colors rounded-full hover:bg-blue-100/50 dark:hover:bg-blue-900/30"
+      >
         <Logo />
       </Link>
 
-      <nav className={styles.nav}>
+      {/* Main Navigation */}
+      <nav className="flex flex-col items-center self-stretch flex-1 lg:items-start">
         {links.map(({ to, icon: Icon, text }) => (
           <NavLink
             to={to}
             title={text}
             key={text}
             className={({ isActive }) =>
-              `${styles.navLink} ${
-                isActive ? styles.navLinkActive : styles.navLinkInactive
-              }`
+              `${
+                isActive ? "text-blue-500" : "text-gray-900 dark:text-white"
+              } flex items-center rounded-full bg-transparent p-4 text-xl font-bold leading-none transition-colors hover:bg-blue-100/50 dark:hover:bg-blue-900/30`
             }
           >
             <Icon />
-            <span className={styles.navLinkText}>{text}</span>
+            <span className="hidden ml-4 mr-1 lg:inline">{text}</span>
           </NavLink>
         ))}
       </nav>
 
+      {/* User Link */}
       {user && (
-        <Link to={`/users/${user.username}`} className={styles.userLink}>
+        <Link
+          to={`/users/${user.username}`}
+          className="flex p-3 transition-colors rounded-full cursor-pointer hover:bg-blue-100/50 dark:hover:bg-blue-900/30"
+        >
           {user.avatarUrl ? (
             <img
-              className={styles.avatar}
+              className="flex-shrink-0 object-cover w-10 h-10 bg-gray-100 rounded-full lg:mr-3"
               src={user.avatarUrl}
               alt={user.name || user.username}
             />
           ) : (
-            <div className={styles.avatarPlaceholder} />
+            <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full dark:bg-gray-900 lg:mr-3" />
           )}
           <div className="hidden lg:block">
-            <div className={styles.name}>{user.name || user.username}</div>
-            <div className={styles.username}>@{user.username}</div>
+            <div className="font-bold leading-tight">
+              {user.name || user.username}
+            </div>
+            <div className="leading-tight text-gray-500">@{user.username}</div>
           </div>
         </Link>
       )}

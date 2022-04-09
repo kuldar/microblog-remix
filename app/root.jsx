@@ -11,6 +11,7 @@ import {
 import { getSessionUser } from "./session.server";
 import Sidebar from "~/components/Sidebar";
 
+// Styles
 import stylesheetUrl from "./styles/styles.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 
@@ -21,17 +22,20 @@ export const links = () => {
   ];
 };
 
+// Page meta info
 export const meta = () => ({
-  charset: "utf-8",
   title: "Microblog",
+  charset: "utf-8",
   viewport: "width=device-width,initial-scale=1",
 });
 
+// Loader
 export const loader = async ({ request }) => {
   const user = await getSessionUser(request);
   return json({ user });
 };
 
+// Root app page
 export default function App() {
   return (
     <html lang="en">
@@ -46,7 +50,6 @@ export default function App() {
             <Outlet />
           </main>
         </div>
-
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

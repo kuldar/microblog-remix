@@ -10,7 +10,7 @@ import {
 import invariant from "tiny-invariant";
 
 import { useOptionalUser } from "~/utils/helpers";
-import { requireSessionUserId, getUserId } from "~/session.server";
+import { requireSessionUserId, getSessionUserId } from "~/session.server";
 import {
   getUserByUsername,
   followUser,
@@ -25,7 +25,7 @@ import {
 
 // Loader
 export const loader = async ({ request, params }) => {
-  const userId = await getUserId(request);
+  const userId = await getSessionUserId(request);
   invariant(params.username, "username not found");
   const user = await getUserByUsername({ username: params.username, userId });
 
@@ -36,17 +36,22 @@ export const loader = async ({ request, params }) => {
 
 // Action
 export const action = async ({ request }) => {
-  const userId = await requireSessionUserId(request);
+  const sessionUserId = await requireSessionUserId(request);
   const formData = await request.formData();
   const { _action, ...values } = Object.fromEntries(formData);
 
+  console.log({ values });
+
   if (_action === "follow") {
-    return await followUser({ followerId: userId, followedId: values.userId });
+    return await followUser({
+      followerId: sessionUserId,
+      followedId: values.userId,
+    });
   }
 
   if (_action === "unfollow") {
     return await unfollowUser({
-      followerId: userId,
+      followerId: sessionUserId,
       followedId: values.userId,
     });
   }

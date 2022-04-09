@@ -1,5 +1,5 @@
-import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
+import { useMatches } from "@remix-run/react";
 
 // Search across all loader data
 export function useMatchesData(id) {
@@ -11,14 +11,11 @@ export function useMatchesData(id) {
   return route?.data;
 }
 
-// Validate that object is user
-function isUser(user) {
-  return user && typeof user === "object" && typeof user.email === "string";
-}
-
 // Get optional user from loader data
 export function useOptionalUser() {
   const data = useMatchesData("root");
+  const isUser = (user) =>
+    user && typeof user === "object" && typeof user.email === "string";
   if (!data || !isUser(data.user)) return undefined;
   return data.user;
 }

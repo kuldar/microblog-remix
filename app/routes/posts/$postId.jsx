@@ -13,7 +13,7 @@ import invariant from "tiny-invariant";
 
 // import Post from "~/components/Post";
 import { formatDate, useOptionalUser } from "~/utils/helpers";
-import { requireSessionUserId, getUserId } from "~/session.server";
+import { requireSessionUserId, getSessionUserId } from "~/session.server";
 import {
   getPost,
   createReply,
@@ -33,7 +33,7 @@ import {
 // Loader
 export const loader = async ({ request, params }) => {
   invariant(params.postId, "postId not found");
-  const userId = await getUserId(request);
+  const userId = await getSessionUserId(request);
 
   const post = await getPost({ id: params.postId, userId });
   if (!post) {
@@ -109,12 +109,12 @@ export default function PostPage() {
   return (
     <>
       {/* Top */}
-      <div className="flex items-center flex-shrink-0 px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+      <div className="flex flex-shrink-0 items-center border-b border-gray-200 px-4 py-3 dark:border-gray-800">
         {/* Back */}
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="flex items-center justify-center w-8 h-8"
+          className="flex h-8 w-8 items-center justify-center"
         >
           <ArrowLeftIcon />
         </button>
@@ -125,11 +125,11 @@ export default function PostPage() {
 
       <div className="overflow-y-auto">
         {/* Post */}
-        <div className="flex flex-col p-4 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex flex-col border-b border-gray-200 p-4 dark:border-gray-800">
           {isRepost && (
             <Link
               to={`/users/${_post.author.username}`}
-              className="flex items-center self-start mb-4 ml-2 text-gray-500 group"
+              className="group mb-4 ml-2 flex items-center self-start text-gray-500"
             >
               <SmallRepostIcon />
               <div className="ml-1 text-sm font-medium text-gray-500 group-hover:underline">
@@ -138,22 +138,22 @@ export default function PostPage() {
             </Link>
           )}
 
-          <div className="flex items-center mb-2">
+          <div className="mb-2 flex items-center">
             <Link
               to={`/users/${post.author.username}`}
               className="transition-opacity hover:opacity-90"
             >
               {post.author.avatarUrl ? (
                 <img
-                  className="object-cover w-12 h-12 rounded-full"
+                  className="h-12 w-12 rounded-full object-cover"
                   src={post.author.avatarUrl}
                   alt={post.author.username}
                 />
               ) : (
-                <div className="w-12 h-12 bg-gray-100 rounded-full dark:bg-gray-900" />
+                <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-900" />
               )}
             </Link>
-            <Link to={`/users/${post.author.username}`} className="ml-3 group">
+            <Link to={`/users/${post.author.username}`} className="group ml-3">
               <div className="font-bold leading-tight group-hover:underline">
                 {post.author.name || post.author.username}
               </div>
@@ -166,7 +166,7 @@ export default function PostPage() {
           {post.replyTo && (
             <Link
               to={`/posts/${post.replyTo.id}`}
-              className="mb-2 text-sm font-medium text-gray-500 group"
+              className="group mb-2 text-sm font-medium text-gray-500"
             >
               replying to{" "}
               <span className="group-hover:underline">
@@ -184,19 +184,19 @@ export default function PostPage() {
           </div>
 
           {/* Timestamp */}
-          <div className="py-2 text-gray-500 border-b border-gray-200 dark:border-gray-800">
+          <div className="border-b border-gray-200 py-2 text-gray-500 dark:border-gray-800">
             {formatDate(post.createdAt)}
           </div>
 
           {/* Stats */}
-          <div className="flex py-3 space-x-4 border-t border-b border-gray-200 dark:border-gray-800">
-            <Link to="reposts" className="flex space-x-2 group" href="#">
+          <div className="flex space-x-4 border-t border-b border-gray-200 py-3 dark:border-gray-800">
+            <Link to="reposts" className="group flex space-x-2" href="#">
               <div className="font-bold">{post._count.reposts}</div>
               <div className="text-gray-500 group-hover:underline">
                 {post._count.reposts === 1 ? "Repost" : "Reposts"}
               </div>
             </Link>
-            <Link to="likes" className="flex space-x-2 group" href="#">
+            <Link to="likes" className="group flex space-x-2" href="#">
               <div className="font-bold">{post._count.likes}</div>
               <div className="text-gray-500 group-hover:underline">
                 {post._count.likes === 1 ? "Like" : "Likes"}
@@ -205,10 +205,10 @@ export default function PostPage() {
           </div>
 
           {/* Actions */}
-          <div className="flex py-2 mb-3 space-x-10 border-b border-gray-200 dark:border-gray-800">
+          <div className="mb-3 flex space-x-10 border-b border-gray-200 py-2 dark:border-gray-800">
             <Link
               to="."
-              className="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-full hover:bg-blue-100/50 hover:text-blue-500 dark:text-gray-600 dark:hover:bg-blue-900/50"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-blue-100/50 hover:text-blue-500 dark:text-gray-600 dark:hover:bg-blue-900/50"
             >
               <CommentIcon />
             </Link>
@@ -219,7 +219,7 @@ export default function PostPage() {
                 <button
                   name="_action"
                   value="unpost"
-                  className="flex items-center justify-center w-8 h-8 text-green-600 transition-colors rounded-full hover:bg-green-100/50 dark:hover:bg-green-900/50"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-green-600 transition-colors hover:bg-green-100/50 dark:hover:bg-green-900/50"
                 >
                   <RepostIcon />
                 </button>
@@ -229,7 +229,7 @@ export default function PostPage() {
                 <button
                   name="_action"
                   value="repost"
-                  className="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-full hover:bg-green-100/50 hover:text-green-600 dark:text-gray-600 dark:hover:bg-green-900/50"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-green-100/50 hover:text-green-600 dark:text-gray-600 dark:hover:bg-green-900/50"
                 >
                   <RepostIcon />
                 </button>
@@ -242,7 +242,7 @@ export default function PostPage() {
                 <button
                   name="_action"
                   value="unlike"
-                  className="flex items-center justify-center w-8 h-8 text-pink-500 transition-colors rounded-full hover:bg-pink-100/50 dark:hover:bg-pink-900/50"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-pink-500 transition-colors hover:bg-pink-100/50 dark:hover:bg-pink-900/50"
                 >
                   <LikeIcon />
                 </button>
@@ -252,7 +252,7 @@ export default function PostPage() {
                 <button
                   name="_action"
                   value="like"
-                  className="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-full hover:bg-pink-100/50 hover:text-pink-500 dark:text-gray-600 dark:hover:bg-pink-900/50"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-pink-100/50 hover:text-pink-500 dark:text-gray-600 dark:hover:bg-pink-900/50"
                 >
                   <LikeIcon />
                 </button>
@@ -269,12 +269,12 @@ export default function PostPage() {
               >
                 {user.avatarUrl ? (
                   <img
-                    className="object-cover w-12 h-12 mr-2 rounded-full"
+                    className="mr-2 h-12 w-12 rounded-full object-cover"
                     src={user.avatarUrl}
                     alt={user.username}
                   />
                 ) : (
-                  <div className="w-12 h-12 mr-2 bg-gray-100 rounded-full dark:bg-gray-900" />
+                  <div className="mr-2 h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-900" />
                 )}
               </Link>
 
@@ -287,7 +287,7 @@ export default function PostPage() {
                 aria-errormessage={
                   actionData?.errors?.body ? "body-error" : undefined
                 }
-                className="flex-1 px-2 py-3 text-xl bg-white outline-none dark:bg-black"
+                className="flex-1 bg-white px-2 py-3 text-xl outline-none dark:bg-black"
               />
               {actionData?.errors?.body && (
                 <div id="body-error">{actionData.errors.body}</div>
@@ -295,7 +295,7 @@ export default function PostPage() {
               <button
                 name="_action"
                 value="reply"
-                className="px-5 py-3 mt-1 font-bold leading-none text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
+                className="mt-1 rounded-full bg-blue-500 px-5 py-3 font-bold leading-none text-white transition-colors hover:bg-blue-600"
                 type="submit"
               >
                 Reply
@@ -305,7 +305,7 @@ export default function PostPage() {
         </div>
 
         {/* Divider */}
-        <div className="h-2 bg-gray-100 border-b border-gray-200 dark:border-gray-800 dark:bg-gray-900" />
+        <div className="h-2 border-b border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-900" />
 
         {/* Replies */}
         <Outlet />
