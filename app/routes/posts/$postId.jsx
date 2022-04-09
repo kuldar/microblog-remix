@@ -12,8 +12,8 @@ import {
 import invariant from "tiny-invariant";
 
 // import Post from "~/components/Post";
-import { formatDate, useOptionalUser } from "~/utils";
-import { requireUserId, getUserId } from "~/session.server";
+import { formatDate, useOptionalUser } from "~/utils/helpers";
+import { requireSessionUserId, getUserId } from "~/session.server";
 import {
   getPost,
   createReply,
@@ -44,7 +44,7 @@ export const loader = async ({ request, params }) => {
 
 // Action
 export const action = async ({ request, params }) => {
-  const userId = await requireUserId(request);
+  const userId = await requireSessionUserId(request);
 
   const formData = await request.formData();
   const { _action } = Object.fromEntries(formData);

@@ -8,11 +8,11 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import { getSessionUser } from "./session.server";
 import Sidebar from "~/components/Sidebar";
 
 import stylesheetUrl from "./styles/styles.css";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import { getUser } from "./session.server";
 
 export const links = () => {
   return [
@@ -28,7 +28,8 @@ export const meta = () => ({
 });
 
 export const loader = async ({ request }) => {
-  return json({ user: await getUser(request) });
+  const user = await getSessionUser(request);
+  return json({ user });
 };
 
 export default function App() {

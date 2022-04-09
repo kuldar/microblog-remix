@@ -2,71 +2,74 @@ import * as React from "react";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 
-import { createUserSession, getUserId } from "~/session.server";
-import { verifyLogin } from "~/models/user.server";
-import { validateEmail } from "~/utils";
+import { validateEmail, validatePassword } from "~/utils/validation";
+import { getUserId, createUserSession } from "~/session.server";
+import { getUserByLogin } from "~/models/user.server";
 
+// Loader
 export const loader = async ({ request }) => {
+  // Redirect if user is already logged in
   const userId = await getUserId(request);
-  if (userId) return redirect("/");
+  if (userId) return redirect("/posts");
+
   return json({});
 };
 
+// Action
 export const action = async ({ request }) => {
   const formData = await request.formData();
-  const email = formData.get("email").toLowerCase().trim();
-  const password = formData.get("password");
+  const formEmail = formData.get("email");
+  const formPassword = formData.get("password");
   const redirectTo = formData.get("redirectTo");
   const remember = formData.get("remember");
 
-  if (!validateEmail(email)) {
-    return json({ errors: { email: "Email is invalid" } }, { status: 400 });
+  let errors = {};
+
+  // Validate email
+  const email = validateEmail(formEmail);
+  if (email.error) errors = { ...errors, email: email.error };
+
+  // Validate password
+  const password = validatePassword(formPassword);
+  if (password.error) errors = { ...errors, password: password.error };
+
+  // Return any validation errors
+  if (Object.keys(errors).length !== 0) {
+    return json({ errors }, { status: 400 });
   }
 
-  if (typeof password !== "string") {
-    return json(
-      { errors: { password: "Password is required" } },
-      { status: 400 }
-    );
-  }
-
-  if (password.length < 8) {
-    return json(
-      { errors: { password: "Password is too short" } },
-      { status: 400 }
-    );
-  }
-
-  const user = await verifyLogin(email, password);
-
+  // Verify login information
+  const user = await getUserByLogin({ email, password });
   if (!user) {
     return json(
-      { errors: { email: "Invalid email or password" } },
+      { errors: { form: "Invalid email or password" } },
       { status: 400 }
     );
   }
 
+  // Create session cookie for successful login
   return createUserSession({
     request,
     userId: user.id,
     remember: remember === "on" ? true : false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/posts",
+    redirectTo,
   });
 };
 
+// Page meta information
 export const meta = () => {
-  return {
-    title: "Login",
-  };
+  return { title: "Log in to Microblog" };
 };
 
+// Login page
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/posts";
+  const redirectTo = searchParams.get("redirectTo") ?? "/posts";
   const actionData = useActionData();
   const emailRef = React.useRef(null);
   const passwordRef = React.useRef(null);
 
+  // Focus inputs in case of errors
   React.useEffect(() => {
     if (actionData?.errors?.email) {
       emailRef.current?.focus();
@@ -76,10 +79,20 @@ export default function LoginPage() {
   }, [actionData]);
 
   return (
-    <div className="flex flex-col py-6 mx-auto my-auto space-y-6 w-96">
+    <div className="flex flex-col w-full px-6 py-6 mx-auto my-auto space-y-6 md:w-96 md:px-0">
+      {/* Title */}
       <div className="text-3xl font-bold">Log in to Microblog</div>
 
-      <Form method="post" className="flex flex-col space-y-6">
+      {/* Form errors */}
+      {actionData?.errors?.form && (
+        <div id="form-error" className="text-sm text-red-400">
+          {actionData.errors.form}
+        </div>
+      )}
+
+      {/* Form */}
+      <Form method="post" className="flex flex-col space-y-4 md:space-y-6">
+        {/* Email */}
         <div className="flex flex-col space-y-2">
           <label htmlFor="email" className="font-semibold">
             Email address
@@ -95,7 +108,7 @@ export default function LoginPage() {
             autoComplete="email"
             aria-invalid={actionData?.errors?.email ? true : undefined}
             aria-describedby="email-error"
-            className="p-3 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-black"
+            className="p-3 bg-white border border-gray-300 rounded outline-none dark:border-gray-600 dark:bg-black"
           />
           {actionData?.errors?.email && (
             <div id="email-error" className="text-sm text-red-400">
@@ -117,7 +130,7 @@ export default function LoginPage() {
             autoComplete="current-password"
             aria-invalid={actionData?.errors?.password ? true : undefined}
             aria-describedby="password-error"
-            className="p-3 bg-white border border-gray-300 rounded dark:border-gray-600 dark:bg-black"
+            className="p-3 bg-white border border-gray-300 rounded outline-none dark:border-gray-600 dark:bg-black"
           />
           {actionData?.errors?.password && (
             <div id="password-error" className="text-sm text-red-400">

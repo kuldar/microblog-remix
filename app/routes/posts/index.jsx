@@ -2,20 +2,20 @@ import * as React from "react";
 import { json } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 
-import { useUser } from "~/utils";
-import { requireUserId } from "~/session.server";
+import { useUser } from "~/utils/helpers";
+import { requireSessionUserId } from "~/session.server";
 import { createPost } from "~/models/post.server";
 import { getUserFeed } from "~/models/user.server";
 import Post from "~/components/Post";
 
 export const loader = async ({ request }) => {
-  const userId = await requireUserId(request);
+  const userId = await requireSessionUserId(request);
   const posts = await getUserFeed(userId);
   return json({ posts });
 };
 
 export const action = async ({ request }) => {
-  const userId = await requireUserId(request);
+  const userId = await requireSessionUserId(request);
 
   const formData = await request.formData();
   const body = formData.get("body");

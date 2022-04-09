@@ -2,6 +2,49 @@ import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
 
+// Get session user by ID
+export async function getSessionUserById({ id }) {
+  return prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      name: true,
+      avatarUrl: true,
+    },
+  });
+}
+
+// Get user by email or username
+export async function getUserByEmailOrUsername({ email, username }) {
+  return prisma.user.findFirst({
+    where: { OR: [{ email }, { username }] },
+    select: { email: true, username: true },
+  });
+}
+
+// Get user by login info
+export async function getUserByLogin({ email, password }) {
+  // Get user by email
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true, password: { select: { hash: true } } },
+  });
+
+  // Check if user with password exists
+  if (!user || !user.password) return null;
+
+  // Check if user password matches
+  const isMatchingPassword = await bcrypt.compare(password, user.password.hash);
+  if (!isMatchingPassword) return null;
+
+  // Return user
+  return user;
+}
+
+/////////
+
 // Get Latest Users
 export async function getLatestUsers({ limit = 10, userId }) {
   if (userId) {
@@ -39,18 +82,6 @@ export async function getLatestUsers({ limit = 10, userId }) {
     });
     return users;
   }
-}
-
-// Get User By ID
-export async function getUserById({ id }) {
-  return prisma.user.findUnique({
-    where: { id },
-  });
-}
-
-// Get User By Email
-export async function getUserByEmail({ email }) {
-  return prisma.user.findUnique({ where: { email } });
 }
 
 // Get User Followers
@@ -215,14 +246,11 @@ export async function createUser({ email, username, password }) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return prisma.user.create({
+    select: { id: true },
     data: {
       email,
       username,
-      password: {
-        create: {
-          hash: hashedPassword,
-        },
-      },
+      password: { create: { hash: hashedPassword } },
     },
   });
 }
@@ -247,33 +275,6 @@ export async function updateUser(newUserInfo) {
 // Delete User By Email
 export async function deleteUserByEmail(email) {
   return prisma.user.delete({ where: { email } });
-}
-
-// Verify Login
-export async function verifyLogin(email, password) {
-  const userWithPassword = await prisma.user.findUnique({
-    where: { email },
-    include: {
-      password: true,
-    },
-  });
-
-  if (!userWithPassword || !userWithPassword.password) {
-    return null;
-  }
-
-  const isValid = await bcrypt.compare(
-    password,
-    userWithPassword.password.hash
-  );
-
-  if (!isValid) {
-    return null;
-  }
-
-  const { password: _password, ...userWithoutPassword } = userWithPassword;
-
-  return userWithoutPassword;
 }
 
 // Follow User

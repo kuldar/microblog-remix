@@ -1,16 +1,16 @@
-import { Form, Link, useNavigate } from "@remix-run/react";
+import { Form, useNavigate } from "@remix-run/react";
 
-import { useUser } from "~/utils";
+import { useUser } from "~/utils/helpers";
 import { updateUser } from "~/models/user.server";
-import { requireUserId } from "~/session.server";
+import { requireSessionUserId } from "~/session.server";
 import { ArrowLeftIcon } from "~/components/Icons";
 
 export const loader = async ({ request }) => {
-  return await requireUserId(request);
+  return await requireSessionUserId(request);
 };
 
 export const action = async ({ request }) => {
-  const userId = await requireUserId(request);
+  const userId = await requireSessionUserId(request);
   const formData = await request.formData();
 
   let name = formData.get("name");

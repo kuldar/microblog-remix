@@ -1,5 +1,5 @@
 import { Link, NavLink } from "@remix-run/react";
-import { useOptionalUser } from "~/utils";
+import { useOptionalUser } from "~/utils/helpers";
 import {
   Logo,
   HomeIcon,

@@ -9,8 +9,8 @@ import {
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import { useOptionalUser } from "~/utils";
-import { requireUserId, getUserId } from "~/session.server";
+import { useOptionalUser } from "~/utils/helpers";
+import { requireSessionUserId, getUserId } from "~/session.server";
 import {
   getUserByUsername,
   followUser,
@@ -36,7 +36,7 @@ export const loader = async ({ request, params }) => {
 
 // Action
 export const action = async ({ request }) => {
-  const userId = await requireUserId(request);
+  const userId = await requireSessionUserId(request);
   const formData = await request.formData();
   const { _action, ...values } = Object.fromEntries(formData);
 
