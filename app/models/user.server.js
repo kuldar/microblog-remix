@@ -284,8 +284,8 @@ export async function updateUser(newUserInfo) {
 }
 
 // Delete User By Email
-export async function deleteUserByEmail(email) {
-  return prisma.user.delete({ where: { email } });
+export async function deleteUser({ userId }) {
+  return prisma.user.delete({ where: { id: userId } });
 }
 
 // Follow User
