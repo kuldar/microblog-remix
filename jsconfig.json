@@ -14,7 +14,6 @@
     "paths": {
       "~/*": ["./app/*"]
     },
-    "exclude": "node_modules",
     "skipLibCheck": true,
 
     // Remix takes care of building everything in `remix build`.
