@@ -17,7 +17,7 @@ export default function PostReplies() {
   return (
     <div>
       {!posts || posts.length === 0 ? (
-        <div className="w-full pt-12 text-center text-gray-300 dark:text-gray-500">
+        <div className="w-full pt-12 text-center text-gray-400 dark:text-gray-500">
           No replies
         </div>
       ) : (

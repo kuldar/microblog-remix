@@ -102,7 +102,6 @@ export default function JoinPage() {
 
   // Focus inputs in case of errors
   React.useEffect(() => {
-    console.log({ actionData });
     if (actionData?.errors?.email) {
       emailRef.current?.focus();
     } else if (actionData?.errors?.username) {

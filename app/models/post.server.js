@@ -1,34 +1,77 @@
 import { prisma } from "~/db.server";
 
-// Get Post Likes
-export function getPostLikes({ id, userId }) {
-  return prisma.user.findMany({
-    where: {
-      likes: { some: { post: { id } } },
-    },
-  });
+// Get users who liked given post
+export async function getPostLikes({ postId, userId }) {
+  if (userId) {
+    const users = await prisma.user.findMany({
+      where: { likes: { some: { postId } } },
+      // orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        avatarUrl: true,
+        username: true,
+        name: true,
+        bio: true,
+        followings: {
+          where: { followedId: userId },
+          select: { createdAt: true },
+        },
+        followers: {
+          where: { followerId: userId },
+          select: { createdAt: true },
+        },
+      },
+    });
+    return users;
+  } else {
+    const users = await prisma.user.findMany({
+      where: { likes: { some: { postId } } },
+      // orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        avatarUrl: true,
+        username: true,
+        name: true,
+        bio: true,
+      },
+    });
+    return users;
+  }
 }
 
 // Get Post Reposters
-export async function getPostReposters({ id, userId }) {
-  let reposterIds = [];
-
-  const post = await prisma.post.findFirst({
-    where: { id },
-    select: { reposts: true },
-  });
-
-  post.reposts.map((repost) => reposterIds.push(repost.authorId));
-
-  return prisma.user.findMany({
-    where: { id: { in: reposterIds } },
-    select: {
-      avatarUrl: true,
-      username: true,
-      name: true,
-      bio: true,
-    },
-  });
+export async function getPostReposters({ postId, userId }) {
+  if (userId) {
+    return prisma.user.findMany({
+      where: { posts: { some: { repostId: postId } } },
+      select: {
+        id: true,
+        avatarUrl: true,
+        username: true,
+        name: true,
+        bio: true,
+        followings: {
+          where: { followedId: userId },
+          select: { createdAt: true },
+        },
+        followers: {
+          where: { followerId: userId },
+          select: { createdAt: true },
+        },
+      },
+    });
+  } else {
+    return prisma.user.findMany({
+      where: { posts: { some: { repostId: postId } } },
+      select: {
+        id: true,
+        avatarUrl: true,
+        username: true,
+        name: true,
+        bio: true,
+      },
+    });
+  }
 }
 
 // Get Post Replies
@@ -46,12 +89,15 @@ export function getPostReplies({ id, userId }) {
           select: { createdAt: true },
         },
         replyTo: { select: { id: true, author: true } },
+        isReply: true,
+        isRepost: true,
         reposts: {
           where: { authorId: userId },
           select: { createdAt: true },
         },
         _count: { select: { likes: true, reposts: true, replies: true } },
       },
+      orderBy: { createdAt: "desc" },
     });
   } else {
     return prisma.post.findMany({
@@ -61,6 +107,8 @@ export function getPostReplies({ id, userId }) {
         body: true,
         createdAt: true,
         author: true,
+        isReply: true,
+        isRepost: true,
         _count: { select: { likes: true, reposts: true, replies: true } },
       },
     });
@@ -81,17 +129,30 @@ export function getPost({ id, userId }) {
           where: { userId },
           select: { createdAt: true },
         },
-        replyTo: { select: { id: true, author: true } },
         reposts: {
           where: { authorId: userId },
           select: { createdAt: true },
         },
         _count: { select: { likes: true, reposts: true, replies: true } },
+        replyTo: { select: { id: true, author: true } },
+        isReply: true,
+        isRepost: true,
         repost: {
           select: {
             id: true,
             body: true,
+            likes: {
+              where: { userId },
+              select: { createdAt: true },
+            },
+            reposts: {
+              where: { authorId: userId },
+              select: { createdAt: true },
+            },
             createdAt: true,
+            isReply: true,
+            isRepost: true,
+            replyTo: { select: { id: true, author: true } },
             author: { select: { username: true, name: true, avatarUrl: true } },
             _count: { select: { likes: true, reposts: true, replies: true } },
           },
@@ -108,11 +169,15 @@ export function getPost({ id, userId }) {
         author: true,
         _count: { select: { likes: true, reposts: true, replies: true } },
         replyTo: { select: { id: true, author: true } },
+        isReply: true,
+        isRepost: true,
         repost: {
           select: {
             id: true,
             body: true,
             createdAt: true,
+            isReply: true,
+            isRepost: true,
             author: { select: { username: true, name: true, avatarUrl: true } },
             _count: { select: { likes: true, reposts: true, replies: true } },
           },
@@ -142,6 +207,8 @@ export async function getLatestPosts({ limit = 10, userId }) {
         },
         replyTo: { select: { id: true, author: true } },
         _count: { select: { likes: true, reposts: true, replies: true } },
+        isRepost: true,
+        isReply: true,
         repost: {
           select: {
             id: true,
@@ -149,6 +216,8 @@ export async function getLatestPosts({ limit = 10, userId }) {
             createdAt: true,
             author: { select: { username: true, name: true, avatarUrl: true } },
             replyTo: { select: { id: true, author: true } },
+            isRepost: true,
+            isReply: true,
             reposts: {
               where: { authorId: userId },
               select: { createdAt: true },
@@ -171,11 +240,15 @@ export async function getLatestPosts({ limit = 10, userId }) {
         author: true,
         replyTo: { select: { id: true, author: true } },
         _count: { select: { likes: true, reposts: true, replies: true } },
+        isRepost: true,
+        isReply: true,
         repost: {
           select: {
             id: true,
             body: true,
             createdAt: true,
+            isRepost: true,
+            isReply: true,
             replyTo: { select: { id: true, author: true } },
             author: { select: { username: true, name: true, avatarUrl: true } },
             _count: { select: { likes: true, reposts: true, replies: true } },
@@ -192,7 +265,7 @@ export async function getLatestPosts({ limit = 10, userId }) {
 export async function getUserPosts({ username, userId }) {
   if (userId) {
     return prisma.post.findMany({
-      where: { AND: [{ author: { is: { username } } }, { replyToId: null }] },
+      where: { AND: [{ author: { is: { username } } }, { isReply: false }] },
       select: {
         id: true,
         body: true,
@@ -207,6 +280,8 @@ export async function getUserPosts({ username, userId }) {
           select: { createdAt: true },
         },
         _count: { select: { likes: true, reposts: true, replies: true } },
+        isRepost: true,
+        isReply: true,
         repost: {
           select: {
             id: true,
@@ -227,13 +302,15 @@ export async function getUserPosts({ username, userId }) {
     });
   } else {
     return prisma.post.findMany({
-      where: { AND: [{ author: { is: { username } } }, { replyToId: null }] },
+      where: { AND: [{ author: { is: { username } } }, { isReply: false }] },
       select: {
         id: true,
         body: true,
         createdAt: true,
         author: true,
         _count: { select: { likes: true, reposts: true, replies: true } },
+        isRepost: true,
+        isReply: true,
         repost: {
           select: {
             id: true,
@@ -254,7 +331,7 @@ export async function getUserPosts({ username, userId }) {
 export async function getUserPostsReplies({ username, userId }) {
   if (userId) {
     return prisma.post.findMany({
-      where: { AND: [{ author: { is: { username } } }, { repostId: null }] },
+      where: { AND: [{ author: { is: { username } } }, { isRepost: false }] },
       select: {
         id: true,
         body: true,
@@ -265,6 +342,8 @@ export async function getUserPostsReplies({ username, userId }) {
           select: { createdAt: true },
         },
         replyTo: { select: { id: true, author: true } },
+        isReply: true,
+        isRepost: true,
         reposts: {
           where: { authorId: userId },
           select: { createdAt: true },
@@ -275,7 +354,7 @@ export async function getUserPostsReplies({ username, userId }) {
     });
   } else {
     return prisma.post.findMany({
-      where: { AND: [{ author: { is: { username } } }, { repostId: null }] },
+      where: { AND: [{ author: { is: { username } } }, { isRepost: false }] },
       select: {
         id: true,
         body: true,
@@ -283,12 +362,15 @@ export async function getUserPostsReplies({ username, userId }) {
         author: true,
         replyTo: { select: { id: true, author: true } },
         _count: { select: { likes: true, reposts: true, replies: true } },
+        isReply: true,
+        isRepost: true,
         repost: {
           select: {
             id: true,
             body: true,
             createdAt: true,
             author: { select: { username: true, name: true, avatarUrl: true } },
+            isReply: true,
             replyTo: { select: { id: true, author: true } },
             _count: { select: { likes: true, reposts: true, replies: true } },
           },
@@ -356,19 +438,16 @@ export function createReply({ body, userId, postId }) {
     data: {
       body,
       replyTo: { connect: { id: postId } },
-      author: {
-        connect: {
-          id: userId,
-        },
-      },
+      isReply: true,
+      author: { connect: { id: userId } },
     },
   });
 }
 
 // Delete Post
-export function deletePost({ id }) {
+export function deletePost({ postId }) {
   return prisma.post.deleteMany({
-    where: { id },
+    where: { id: postId },
   });
 }
 
@@ -397,6 +476,7 @@ export async function repostPost({ postId, userId }) {
     data: {
       authorId: userId,
       repostId: postId,
+      isRepost: true,
     },
   });
 

@@ -40,8 +40,6 @@ export const action = async ({ request }) => {
   const formData = await request.formData();
   const { _action, ...values } = Object.fromEntries(formData);
 
-  console.log({ values });
-
   if (_action === "follow") {
     return await followUser({
       followerId: sessionUserId,

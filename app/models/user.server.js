@@ -212,7 +212,13 @@ export async function getUserFeed(userId) {
   user.followings.map((follow) => userIds.push(follow.followedId));
 
   const posts = await prisma.post.findMany({
-    where: { AND: [{ authorId: { in: userIds } }, { replyToId: null }] },
+    where: {
+      AND: [
+        { authorId: { in: userIds } },
+        { isReply: false },
+        { NOT: { AND: [{ isRepost: true }, { repost: null }] } },
+      ],
+    },
     select: {
       id: true,
       body: true,
@@ -221,11 +227,16 @@ export async function getUserFeed(userId) {
       reposts: { where: { authorId: userId }, select: { createdAt: true } },
       likes: { where: { userId }, select: { createdAt: true } },
       _count: { select: { likes: true, reposts: true, replies: true } },
+      isRepost: true,
+      isReply: true,
+      replyTo: { select: { id: true, author: true } },
       repost: {
         select: {
           id: true,
           body: true,
           createdAt: true,
+          isReply: true,
+          isRepost: true,
           replyTo: { select: { id: true, author: true } },
           author: { select: { username: true, name: true, avatarUrl: true } },
           reposts: { where: { authorId: userId }, select: { createdAt: true } },

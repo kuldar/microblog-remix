@@ -148,8 +148,9 @@ async function seed() {
     },
   });
 
-  const post2 = await db.post.create({
+  const post1Repost = await db.post.create({
     data: {
+      isRepost: true,
       repostId: post1.id,
       authorId: mikeUser.id,
     },
@@ -173,6 +174,7 @@ async function seed() {
     data: {
       replyToId: post1.id,
       authorId: mikeUser.id,
+      isReply: true,
       body: "Well I don't know about that..",
     },
   });

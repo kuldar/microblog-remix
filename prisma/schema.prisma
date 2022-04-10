@@ -30,9 +30,9 @@ model User {
 }
 
 model Follow {
-  follower   User   @relation("follower", fields: [followerId], references: [id])
+  follower   User   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   followerId String
-  followed   User   @relation("followed", fields: [followedId], references: [id])
+  followed   User   @relation("followed", fields: [followedId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   followedId String
 
   createdAt DateTime @default(now())
@@ -59,8 +59,10 @@ model PostLike {
 }
 
 model Post {
-  id   String  @id @default(cuid())
-  body String?
+  id       String  @id @default(cuid())
+  body     String?
+  isRepost Boolean @default(false)
+  isReply  Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
