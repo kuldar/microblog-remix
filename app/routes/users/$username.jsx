@@ -21,6 +21,7 @@ import {
   LocationIcon,
   LinkIcon,
   CalendarIcon,
+  VerifiedBadge,
 } from "~/components/Icons";
 
 // Loader
@@ -150,8 +151,11 @@ export default function UserPage() {
         <div className="px-4">
           {/* Name */}
           <div className="mb-2">
-            <div className="text-xl font-bold leading-tight">
-              {data.user.name || data.user.username}
+            <div className="flex items-center text-xl font-bold leading-tight">
+              <span>{data.user.name || data.user.username}</span>
+              {data.user.status === "verified" && (
+                <VerifiedBadge className="ml-1 text-blue-500 dark:text-white" />
+              )}
             </div>
             <div className="flex">
               <div className="leading-tight text-gray-500">

@@ -6,6 +6,7 @@ import {
   RepostIcon,
   LikeIcon,
   SmallRepostIcon,
+  VerifiedBadge,
 } from "~/components/Icons";
 
 const Post = ({ post: originalPost }) => {
@@ -58,8 +59,11 @@ const Post = ({ post: originalPost }) => {
                 to={`/users/${post.author.username}`}
                 className="flex min-w-0 flex-shrink-1 group whitespace-nowrap"
               >
-                <span className="overflow-hidden font-bold text-ellipsis group-hover:underline">
-                  {post.author.name || post.author.username}
+                <span className="flex items-center overflow-hidden font-bold text-ellipsis group-hover:underline">
+                  <span>{post.author.name || post.author.username}</span>
+                  {post.author.status === "verified" && (
+                    <VerifiedBadge className="ml-1 text-blue-500 dark:text-white" />
+                  )}
                 </span>
                 <span className="ml-1 text-gray-500">
                   @{post.author.username}

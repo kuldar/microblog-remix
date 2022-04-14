@@ -85,17 +85,18 @@ export const action = async ({ request }) => {
   }
 
   const hostUrl = new URL(request.url).host;
-  const protocol = new URL(request.url).protocol;
+  const protocol = isProduction ? "https://" : "http://";
   const encodedEmail = encodeURIComponent(user.email);
+  const subject = "Please verify your email";
   const html = `
-    <h1>Welcome to Microblog!</h1>
+    <h1 style="font-size:1.5em;">Welcome to Microblog!</h1>
     <p>Please verify your email address by clicking the link below.</p>
-    <p><a href="${protocol}//${hostUrl}/verify-email?email=${encodedEmail}&code=${user.confirmationCode}">Verify email address</a></p>
-    <p>Or enter the code <code>${user.confirmationCode}</code> at ${protocol}//${hostUrl}/verify-email</p>
+    <p><a href="${protocol}${hostUrl}/verify-email?email=${encodedEmail}&code=${user.confirmationCode}">Verify email address</a></p>
+    <p>Or enter the code <code style="background:#eeeeee;border-radius:4px;padding:1px 4px;">${user.confirmationCode}</code> at ${hostUrl}/verify-email</p>
   `;
-  const text = `Welcome to Microblog! Please visit the link below to verify your email address. \n${protocol}//${hostUrl}/verify-email?email=${encodedEmail}&code=${user.confirmationCode}`;
+  const text = `Welcome to Microblog! Please verify your email address by visiting the link \n${protocol}${hostUrl}/verify-email?email=${encodedEmail}&code=${user.confirmationCode}`;
 
-  await sendEmail({ to: email, text, html });
+  await sendEmail({ subject, to: email, text, html });
 
   return redirect(
     `/verify-email?${new URLSearchParams({ email: user.email })}`

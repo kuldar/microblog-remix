@@ -9,6 +9,7 @@ import {
   SettingsIcon,
   EmailIcon,
   KeyIcon,
+  VerifiedBadge,
 } from "./Icons";
 
 // Sidebar
@@ -75,8 +76,11 @@ const Sidebar = () => {
             <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full dark:bg-gray-900 lg:mr-3" />
           )}
           <div className="hidden lg:block">
-            <div className="font-bold leading-tight">
-              {user.name || user.username}
+            <div className="flex items-center font-bold leading-tight">
+              <span>{user.name || user.username}</span>
+              {user.status === "verified" && (
+                <VerifiedBadge className="ml-1 text-blue-500 dark:text-white" />
+              )}
             </div>
             <div className="leading-tight text-gray-500">@{user.username}</div>
           </div>

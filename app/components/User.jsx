@@ -1,6 +1,7 @@
 import { Link, useFetcher } from "@remix-run/react";
 
 import { useOptionalUser } from "~/utils/helpers";
+import { VerifiedBadge } from "~/components/Icons";
 
 const User = ({ user }) => {
   const currentUser = useOptionalUser();
@@ -27,10 +28,13 @@ const User = ({ user }) => {
 
         <div className="w-full">
           {/* Post header  */}
-          <div className="flex items-center">
-            <Link to={`/users/${user.username}`} className="flex-1 group">
-              <div className="font-bold group-hover:underline">
-                {user.name || user.username}
+          <div className="flex items-center justify-between">
+            <Link to={`/users/${user.username}`} className="group">
+              <div className="flex items-center font-bold group-hover:underline">
+                <span>{user.name || user.username}</span>
+                {user.status === "verified" && (
+                  <VerifiedBadge className="ml-1 text-blue-500 dark:text-white" />
+                )}
               </div>
               <div className="leading-snug text-gray-500">@{user.username}</div>
             </Link>

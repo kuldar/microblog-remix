@@ -13,6 +13,7 @@ export async function getSessionUserById({ id }) {
       username: true,
       name: true,
       avatarUrl: true,
+      status: true,
     },
   });
 }
@@ -80,6 +81,7 @@ export async function getLatestUsers({ limit = 10, userId }) {
         username: true,
         name: true,
         bio: true,
+        status: true,
         followings: {
           where: { followedId: userId },
           select: { createdAt: true },
@@ -101,6 +103,7 @@ export async function getLatestUsers({ limit = 10, userId }) {
         username: true,
         name: true,
         bio: true,
+        status: true,
       },
     });
     return users;
@@ -125,6 +128,7 @@ export async function getUserFollowers({ username, userId }) {
       username: true,
       name: true,
       bio: true,
+      status: true,
       followings: {
         where: { followedId: userId },
         select: { createdAt: true },
@@ -155,6 +159,7 @@ export async function getUserFollowings({ username, userId }) {
       username: true,
       name: true,
       bio: true,
+      status: true,
       followings: {
         where: { followedId: userId },
         select: { createdAt: true },
@@ -182,6 +187,7 @@ export async function getUserByUsername({ username, userId }) {
         createdAt: true,
         location: true,
         website: true,
+        status: true,
         followings: {
           where: { followedId: userId },
           select: { createdAt: true },
@@ -212,6 +218,7 @@ export async function getUserByUsername({ username, userId }) {
         createdAt: true,
         location: true,
         website: true,
+        status: true,
         _count: {
           select: {
             followers: true,
@@ -246,7 +253,9 @@ export async function getUserFeed(userId) {
       id: true,
       body: true,
       createdAt: true,
-      author: { select: { username: true, name: true, avatarUrl: true } },
+      author: {
+        select: { username: true, name: true, avatarUrl: true, status: true },
+      },
       reposts: { where: { authorId: userId }, select: { createdAt: true } },
       likes: { where: { userId }, select: { createdAt: true } },
       _count: { select: { likes: true, reposts: true, replies: true } },
@@ -261,7 +270,14 @@ export async function getUserFeed(userId) {
           isReply: true,
           isRepost: true,
           replyTo: { select: { id: true, author: true } },
-          author: { select: { username: true, name: true, avatarUrl: true } },
+          author: {
+            select: {
+              username: true,
+              name: true,
+              avatarUrl: true,
+              status: true,
+            },
+          },
           reposts: { where: { authorId: userId }, select: { createdAt: true } },
           likes: { where: { userId }, select: { createdAt: true } },
           _count: { select: { likes: true, reposts: true, replies: true } },
