@@ -45,6 +45,13 @@ export const action = async ({ request }) => {
       { errors: { form: "Invalid email or password" } },
       { status: 400 }
     );
+  } else if (user.status === "pending") {
+    return json(
+      {
+        errors: { form: "Please confirm your email address before logging in" },
+      },
+      { status: 403 }
+    );
   }
 
   // Create session cookie for successful login

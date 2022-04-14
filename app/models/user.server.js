@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
+import { generateCode } from "~/utils/codeGenerator";
 
 // Get session user by ID
 export async function getSessionUserById({ id }) {
@@ -29,7 +30,7 @@ export async function getUserByLogin({ email, password }) {
   // Get user by email
   const user = await prisma.user.findUnique({
     where: { email },
-    select: { id: true, password: { select: { hash: true } } },
+    select: { id: true, status: true, password: { select: { hash: true } } },
   });
 
   // Check if user with password exists
@@ -41,6 +42,28 @@ export async function getUserByLogin({ email, password }) {
 
   // Return user
   return user;
+}
+
+// Confirm user email with code
+export async function confirmUserEmail({ email, code }) {
+  // Get user by email
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { email: true, confirmationCode: true, status: true },
+  });
+
+  // Check if we have user, user status is pending and the code matches
+  if (!user || user.status !== "pending" || user.confirmationCode !== code)
+    return null;
+
+  // Activate user, remove code and return user
+  const activatedUser = await prisma.user.update({
+    where: { email },
+    select: { id: true, email: true },
+    data: { status: "active", confirmationCode: null },
+  });
+
+  return activatedUser;
 }
 
 /////////
@@ -255,12 +278,14 @@ export async function getUserFeed(userId) {
 // Create User
 export async function createUser({ email, username, password }) {
   const hashedPassword = await bcrypt.hash(password, 10);
+  const confirmationCode = generateCode();
 
   return prisma.user.create({
-    select: { id: true },
+    select: { id: true, email: true, confirmationCode: true },
     data: {
       email,
       username,
+      confirmationCode,
       password: { create: { hash: hashedPassword } },
     },
   });

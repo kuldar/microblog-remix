@@ -1,14 +1,23 @@
 import * as React from "react";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useSearchParams,
+  useTransition,
+} from "@remix-run/react";
 
 import {
   validateEmail,
   validateUsername,
   validatePassword,
 } from "~/utils/validation";
-import { getSessionUserId, createUserSession } from "~/session.server";
+import { getSessionUserId } from "~/session.server";
 import { createUser, getUserByEmailOrUsername } from "~/models/user.server";
+import { sendEmail } from "~/utils/mailer";
+
+let isProduction = process.env.NODE_ENV === "production";
 
 // Loader
 export const loader = async ({ request }) => {
@@ -25,7 +34,6 @@ export const action = async ({ request }) => {
   const formEmail = formData.get("email");
   const formUsername = formData.get("username");
   const formPassword = formData.get("password");
-  const redirectTo = formData.get("redirectTo");
 
   let errors = {};
 
@@ -69,19 +77,29 @@ export const action = async ({ request }) => {
 
   // Create new user in database
   const user = await createUser({ email, username, password });
+  console.log({ user });
 
   // Check for any errors in creating user
   if (!user) {
     return json({ errors: { form: "Problem creating user" } }, { status: 400 });
   }
 
-  // Create session cookie for successful login
-  return createUserSession({
-    request,
-    userId: user.id,
-    remember: false,
-    redirectTo,
-  });
+  const hostUrl = new URL(request.url).host;
+  const protocol = new URL(request.url).protocol;
+  const encodedEmail = encodeURIComponent(user.email);
+  const html = `
+    <h1>Welcome to Microblog!</h1>
+    <p>Please verify your email address by clicking the link below.</p>
+    <p><a href="${protocol}//${hostUrl}/verify-email?email=${encodedEmail}&code=${user.confirmationCode}">Verify email address</a></p>
+    <p>Or enter the code <code>${user.confirmationCode}</code> at ${protocol}//${hostUrl}/verify-email</p>
+  `;
+  const text = `Welcome to Microblog! Please visit the link below to verify your email address. \n${protocol}//${hostUrl}/verify-email?email=${encodedEmail}&code=${user.confirmationCode}`;
+
+  await sendEmail({ to: email, text, html });
+
+  return redirect(
+    `/verify-email?${new URLSearchParams({ email: user.email })}`
+  );
 };
 
 // Page meta information
@@ -94,11 +112,14 @@ export const meta = () => {
 // Join page
 export default function JoinPage() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? "/posts";
   const actionData = useActionData();
+  const transition = useTransition();
+
   const emailRef = React.useRef(null);
   const usernameRef = React.useRef(null);
   const passwordRef = React.useRef(null);
+
+  console.log({ actionData });
 
   // Focus inputs in case of errors
   React.useEffect(() => {
@@ -197,12 +218,10 @@ export default function JoinPage() {
           )}
         </div>
 
-        {/* Redirect path */}
-        <input type="hidden" name="redirectTo" value={redirectTo} />
-
         {/* Submit button */}
         <button
           type="submit"
+          disabled={transition.state === "submitting"}
           className="p-4 text-lg font-bold leading-none text-center text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
         >
           Create account
