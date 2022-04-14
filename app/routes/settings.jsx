@@ -1,12 +1,14 @@
-import { Form, useNavigate } from "@remix-run/react";
+import { json } from "@remix-run/node";
+import { Form, useNavigate, useLoaderData } from "@remix-run/react";
 
-import { useUser } from "~/utils/helpers";
-import { updateUser, deleteUser } from "~/models/user.server";
+import { updateUser, deleteUser, getUserSettings } from "~/models/user.server";
 import { requireSessionUserId } from "~/session.server";
 import { ArrowLeftIcon } from "~/components/Icons";
 
 export const loader = async ({ request }) => {
-  return await requireSessionUserId(request);
+  const userId = await requireSessionUserId(request);
+  const user = await getUserSettings({ id: userId });
+  return json({ user });
 };
 
 export const action = async ({ request }) => {
@@ -39,7 +41,7 @@ export const action = async ({ request }) => {
 };
 
 export default function SettingsPage() {
-  const user = useUser();
+  const { user } = useLoaderData();
   const navigate = useNavigate();
 
   return (

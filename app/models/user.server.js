@@ -18,6 +18,25 @@ export async function getSessionUserById({ id }) {
   });
 }
 
+// Get user settings
+export async function getUserSettings({ id }) {
+  return prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      name: true,
+      website: true,
+      location: true,
+      bio: true,
+      avatarUrl: true,
+      coverUrl: true,
+      status: true,
+    },
+  });
+}
+
 // Get user by email or username
 export async function getUserByEmailOrUsername({ email, username }) {
   return prisma.user.findFirst({
