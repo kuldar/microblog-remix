@@ -19,6 +19,8 @@ export const links = () => {
   return [
     { rel: "stylesheet", href: stylesheetUrl },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
+    { rel: "mask-icon", href: "/favicon.svg", color: "#000000" },
+    { rel: "icon", href: "/favicon.svg" },
   ];
 };
 
