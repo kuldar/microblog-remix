@@ -8,8 +8,10 @@ import {
   useActionData,
   useNavigate,
   useFetcher,
+  useSubmit,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
+import TextareaAutosize from "react-textarea-autosize";
 
 import { formatDate, formatTime, useOptionalUser } from "~/utils/helpers";
 import { requireSessionUserId, getSessionUserId } from "~/session.server";
@@ -98,7 +100,10 @@ export const action = async ({ request, params }) => {
     const body = formData.get("body");
 
     if (typeof body !== "string" || body.length === 0) {
-      return json({ errors: { body: "Body is required" } }, { status: 400 });
+      return json(
+        { errors: { body: "Can't post an empty reply" } },
+        { status: 400 }
+      );
     }
 
     const post = await createReply({
@@ -115,6 +120,7 @@ export const action = async ({ request, params }) => {
 export default function PostPage() {
   const navigate = useNavigate();
   const fetcher = useFetcher();
+  const submit = useSubmit();
   const user = useOptionalUser();
   const { post: originalPost } = useLoaderData();
 
@@ -124,6 +130,7 @@ export default function PostPage() {
 
   const actionData = useActionData();
   const bodyRef = React.useRef(null);
+  const formRef = React.useRef(null);
 
   // Focus input or clear form
   React.useEffect(() => {
@@ -133,6 +140,36 @@ export default function PostPage() {
       bodyRef.current.value = "";
     }
   }, [actionData]);
+
+  React.useEffect(() => {
+    let keysPressed = {};
+
+    const keyDown = (event) => {
+      keysPressed[event.key] = true;
+
+      if (
+        keysPressed["Meta"] &&
+        keysPressed["Enter"] &&
+        bodyRef.current === document.activeElement
+      ) {
+        event.preventDefault();
+        const formData = new FormData(formRef.current);
+        formData.append("_action", "reply");
+        keysPressed = {};
+        submit(formData, { method: "post" });
+      }
+    };
+
+    const keyUp = (event) => delete keysPressed[event.key];
+
+    document.addEventListener("keydown", keyDown);
+    document.addEventListener("keyup", keyUp);
+
+    return () => {
+      document.removeEventListener("keydown", keyDown);
+      document.removeEventListener("keyup", keyUp);
+    };
+  }, []);
 
   return (
     <>
@@ -360,11 +397,7 @@ export default function PostPage() {
 
               {/* New post form */}
               {user && (
-                <Form
-                  method="post"
-                  action={`/posts/${post.id}`}
-                  className="flex items-start"
-                >
+                <div className="flex">
                   <Link
                     to={`/users/${user.username}`}
                     className="transition-opacity hover:opacity-90"
@@ -380,29 +413,45 @@ export default function PostPage() {
                     )}
                   </Link>
 
-                  <textarea
-                    placeholder="Post your reply"
-                    ref={bodyRef}
-                    name="body"
-                    rows={1}
-                    aria-invalid={actionData?.errors?.body ? true : undefined}
-                    aria-errormessage={
-                      actionData?.errors?.body ? "body-error" : undefined
-                    }
-                    className="flex-1 px-2 py-3 text-xl bg-white outline-none dark:bg-black"
-                  />
-                  {actionData?.errors?.body && (
-                    <div id="body-error">{actionData.errors.body}</div>
-                  )}
-                  <button
-                    name="_action"
-                    value="reply"
-                    className="px-5 py-3 mt-1 font-bold leading-none text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
-                    type="submit"
+                  <Form
+                    method="post"
+                    ref={formRef}
+                    action={`/posts/${post.id}`}
+                    className="flex items-start flex-1"
                   >
-                    Reply
-                  </button>
-                </Form>
+                    <div className="flex flex-col flex-1">
+                      <TextareaAutosize
+                        placeholder="Post your reply"
+                        ref={bodyRef}
+                        name="body"
+                        rows={1}
+                        minRows={1}
+                        maxRows={5}
+                        aria-invalid={
+                          actionData?.errors?.body ? true : undefined
+                        }
+                        aria-errormessage={
+                          actionData?.errors?.body ? "body-error" : undefined
+                        }
+                        className="px-2 py-3 text-xl bg-white outline-none resize-none dark:bg-black"
+                      />
+                      {actionData?.errors?.body && (
+                        <div id="body-error" className="text-sm text-red-400">
+                          {actionData.errors.body}
+                        </div>
+                      )}
+                    </div>
+
+                    <button
+                      name="_action"
+                      value="reply"
+                      className="px-5 py-3 mt-1 font-bold leading-none text-white transition-colors bg-blue-500 rounded-full hover:bg-blue-600"
+                      type="submit"
+                    >
+                      Reply
+                    </button>
+                  </Form>
+                </div>
               )}
             </>
           )}

@@ -1,6 +1,12 @@
 import * as React from "react";
 import { json } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useSubmit,
+} from "@remix-run/react";
+import TextareaAutosize from "react-textarea-autosize";
 
 import { useUser } from "~/utils/helpers";
 import { requireSessionUserId } from "~/session.server";
@@ -22,7 +28,7 @@ export const action = async ({ request }) => {
 
   if (typeof body !== "string" || body.length === 0) {
     return json(
-      { errors: { body: "Got to write something.." } },
+      { errors: { body: "Can't post an empty post..." } },
       { status: 400 }
     );
   }
@@ -32,12 +38,14 @@ export const action = async ({ request }) => {
   return json({ post });
 };
 
-export default function PostsPage() {
+export default function PostsPage({ request }) {
   const { posts } = useLoaderData();
+  const submit = useSubmit();
   const user = useUser();
 
   const actionData = useActionData();
   const bodyRef = React.useRef(null);
+  const formRef = React.useRef(null);
 
   React.useEffect(() => {
     if (actionData?.errors?.body) {
@@ -46,6 +54,36 @@ export default function PostsPage() {
       bodyRef.current.value = "";
     }
   }, [actionData]);
+
+  // Listen for cmd+enter to submit a form with js
+  React.useEffect(() => {
+    let keysPressed = {};
+
+    const keyDown = (event) => {
+      keysPressed[event.key] = true;
+
+      if (
+        keysPressed["Meta"] &&
+        keysPressed["Enter"] &&
+        bodyRef.current === document.activeElement
+      ) {
+        event.preventDefault();
+        const formData = new FormData(formRef.current);
+        keysPressed = {};
+        submit(formData, { method: "post", action: "/posts?index" });
+      }
+    };
+
+    const keyUp = (event) => delete keysPressed[event.key];
+
+    document.addEventListener("keydown", keyDown);
+    document.addEventListener("keyup", keyUp);
+
+    return () => {
+      document.removeEventListener("keydown", keyDown);
+      document.removeEventListener("keyup", keyUp);
+    };
+  }, []);
 
   return (
     <>
@@ -67,20 +105,22 @@ export default function PostsPage() {
             <div className="w-12 h-12 mr-2 bg-gray-100 rounded-full dark:bg-gray-900" />
           )}
 
-          <Form method="post" className="flex flex-col flex-1">
-            <textarea
+          <Form method="post" ref={formRef} className="flex flex-col flex-1">
+            <TextareaAutosize
               placeholder="What's happening?"
               ref={bodyRef}
               name="body"
               rows={1}
+              minRows={1}
+              maxRows={5}
               aria-invalid={actionData?.errors?.body ? true : undefined}
               aria-errormessage={
                 actionData?.errors?.body ? "body-error" : undefined
               }
-              className="px-2 py-3 text-xl bg-white outline-none dark:bg-black"
+              className="px-2 py-3 text-xl bg-white outline-none resize-none dark:bg-black"
             />
             {actionData?.errors?.body && (
-              <div id="body-error" className="text-sm text-red-500">
+              <div id="body-error" className="text-sm text-red-400">
                 {actionData.errors.body}
               </div>
             )}
