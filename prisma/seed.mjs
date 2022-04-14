@@ -55,6 +55,7 @@ async function seed() {
   const mikeUser = await db.user.create({
     data: {
       ...mike,
+      status: "verified",
       password: { create: { hash: await bcrypt.hash(mike.password, 10) } },
     },
   });
@@ -62,6 +63,7 @@ async function seed() {
   const saulUser = await db.user.create({
     data: {
       ...saul,
+      status: "active",
       password: { create: { hash: await bcrypt.hash(saul.password, 10) } },
     },
   });
@@ -69,6 +71,7 @@ async function seed() {
   const laloUser = await db.user.create({
     data: {
       ...lalo,
+      status: "active",
       password: { create: { hash: await bcrypt.hash(lalo.password, 10) } },
     },
   });

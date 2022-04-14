@@ -77,7 +77,6 @@ export const action = async ({ request }) => {
 
   // Create new user in database
   const user = await createUser({ email, username, password });
-  console.log({ user });
 
   // Check for any errors in creating user
   if (!user) {
@@ -119,8 +118,6 @@ export default function JoinPage() {
   const emailRef = React.useRef(null);
   const usernameRef = React.useRef(null);
   const passwordRef = React.useRef(null);
-
-  console.log({ actionData });
 
   // Focus inputs in case of errors
   React.useEffect(() => {

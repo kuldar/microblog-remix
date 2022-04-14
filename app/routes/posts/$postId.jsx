@@ -156,7 +156,7 @@ export default function PostPage() {
         const formData = new FormData(formRef.current);
         formData.append("_action", "reply");
         keysPressed = {};
-        submit(formData, { method: "post" });
+        submit(formData, { method: "post", action: `/posts/${post.id}` });
       }
     };
 
@@ -457,8 +457,8 @@ export default function PostPage() {
           )}
         </div>
 
-        {/* Replies */}
-        {!isRepost && !isMissingRepost && (
+        {/* Outlet */}
+        {!isMissingRepost && (
           <>
             <div className="h-2 bg-gray-100 border-b border-gray-200 dark:border-gray-800 dark:bg-gray-900" />
             <Outlet />

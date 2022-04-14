@@ -73,6 +73,7 @@ export async function confirmUserEmail({ email, code }) {
 export async function getLatestUsers({ limit = 10, userId }) {
   if (userId) {
     const users = await prisma.user.findMany({
+      where: { status: { in: ["active", "verified"] } },
       orderBy: { createdAt: "desc" },
       take: limit,
       select: {
