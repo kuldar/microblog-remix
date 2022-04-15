@@ -196,7 +196,9 @@ export async function getLatestPosts({ limit = 10, userId }) {
         id: true,
         body: true,
         createdAt: true,
-        author: true,
+        author: {
+          select: { username: true, name: true, avatarUrl: true, status: true },
+        },
         likes: {
           where: { userId },
           select: { createdAt: true },
@@ -214,7 +216,14 @@ export async function getLatestPosts({ limit = 10, userId }) {
             id: true,
             body: true,
             createdAt: true,
-            author: { select: { username: true, name: true, avatarUrl: true } },
+            author: {
+              select: {
+                username: true,
+                name: true,
+                avatarUrl: true,
+                status: true,
+              },
+            },
             replyTo: { select: { id: true, author: true } },
             isRepost: true,
             isReply: true,
@@ -237,7 +246,9 @@ export async function getLatestPosts({ limit = 10, userId }) {
         id: true,
         body: true,
         createdAt: true,
-        author: true,
+        author: {
+          select: { username: true, name: true, avatarUrl: true, status: true },
+        },
         replyTo: { select: { id: true, author: true } },
         _count: { select: { likes: true, reposts: true, replies: true } },
         isRepost: true,
@@ -249,8 +260,15 @@ export async function getLatestPosts({ limit = 10, userId }) {
             createdAt: true,
             isRepost: true,
             isReply: true,
+            author: {
+              select: {
+                username: true,
+                name: true,
+                avatarUrl: true,
+                status: true,
+              },
+            },
             replyTo: { select: { id: true, author: true } },
-            author: { select: { username: true, name: true, avatarUrl: true } },
             _count: { select: { likes: true, reposts: true, replies: true } },
           },
         },

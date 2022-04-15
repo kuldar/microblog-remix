@@ -55,7 +55,7 @@ async function seed() {
   const mikeUser = await db.user.create({
     data: {
       ...mike,
-      status: "verified",
+      status: "active",
       password: { create: { hash: await bcrypt.hash(mike.password, 10) } },
     },
   });
@@ -63,7 +63,7 @@ async function seed() {
   const saulUser = await db.user.create({
     data: {
       ...saul,
-      status: "active",
+      status: "verified",
       password: { create: { hash: await bcrypt.hash(saul.password, 10) } },
     },
   });
@@ -144,6 +144,13 @@ async function seed() {
     });
   });
 
+  const post0 = await db.post.create({
+    data: {
+      body: "I'm going to be deleted",
+      authorId: saulUser.id,
+    },
+  });
+
   const post1 = await db.post.create({
     data: {
       body: "Perfection is the enemy of perfectly adequate.",
@@ -182,11 +189,54 @@ async function seed() {
     },
   });
 
+  const post1Reply2 = await db.post.create({
+    data: {
+      replyToId: post1.id,
+      authorId: laloUser.id,
+      isReply: true,
+      body: "True, true, true 👏",
+    },
+  });
+
   const postLike3 = await db.postLike.create({
     data: {
       postId: post1Reply.id,
       userId: saulUser.id,
     },
+  });
+
+  const postLike4 = await db.postLike.create({
+    data: {
+      postId: post1Reply2.id,
+      userId: saulUser.id,
+    },
+  });
+
+  const postLike5 = await db.postLike.create({
+    data: {
+      postId: post1Reply2.id,
+      userId: mikeUser.id,
+    },
+  });
+
+  const post1Repost2 = await db.post.create({
+    data: {
+      isRepost: true,
+      repostId: post1.id,
+      authorId: laloUser.id,
+    },
+  });
+
+  const post0Repost = await db.post.create({
+    data: {
+      isRepost: true,
+      repostId: post0.id,
+      authorId: mikeUser.id,
+    },
+  });
+
+  const deletePost0 = await db.post.delete({
+    where: { id: post0.id },
   });
 
   console.log(`Database has been seeded. 🌱`);

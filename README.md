@@ -16,14 +16,17 @@
 
 This starts your app in development mode, rebuilding assets on file changes.
 
-The database seed script creates a new user with some data you can use to get started:
+The database seed script creates a few new users with some data you can use to get started:
 
-- Email: `saul@email.com`
-- Password: `password`
+Users:
+
+- Saul: `saul@email.com / password`
+- Mike: `mike@email.com / password`
+- Lalo: `lalo@email.com / password`
 
 ## Deployment
 
-This Remix Stack comes with two GitHub Actions that handle automatically deploying your app to production and staging environments.
+Two GitHub Actions handle automatically deploying your app to production and staging environments.
 
 Prior to your first deployment, you'll need to do a few things:
 
@@ -80,10 +83,6 @@ Now that everything is set up you can commit and push your changes to your repo.
 
 The sqlite database lives at `/data/sqlite.db` in your deployed application. You can connect to the live database by running `fly ssh console -C database-cli`.
 
-### Getting Help with Deployment
-
-If you run into any issues deploying to Fly, make sure you've followed all of the steps above and if you have, then post as many details about your deployment (including your app name) to [the Fly support community](https://community.fly.io). They're normally pretty responsive over there and hopefully can help resolve any of your deployment issues and questions.
-
 ## GitHub Actions
 
 We use GitHub Actions for continuous integration and deployment. Anything that gets into the `main` branch will be deployed to production after running tests/build/etc. Anything in the `dev` branch will be deployed to staging.
@@ -94,4 +93,4 @@ This project uses ESLint for linting. That is configured in `.eslintrc.js`.
 
 ### Formatting
 
-We use [Prettier](https://prettier.io/) for auto-formatting in this project. It's recommended to install an editor plugin (like the [VSCode Prettier plugin](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)) to get auto-formatting on save. There's also a `npm run format` script you can run to format all files in the project.
+It's recommended to install an editor plugin (like the [VSCode Prettier plugin](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)) to get auto-formatting on save. There's also a `npm run format` script you can run to format all files in the project.
