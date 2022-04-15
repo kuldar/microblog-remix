@@ -1,8 +1,29 @@
 # Microblog
 
-No guarantees that any of this works. I'm new at this and experimenting. Built on top of [Remix's](https://remix.run/) Indie Stack. Uses Nodemailer to send confirmation codes to email. Database query organisation might be a hot mess.
+No guarantees that any of this works. I'm new at this and experimenting. Built on top of [Remix's](https://remix.run/) Indie Stack. Database query organisation might be a hot mess. Uses Nodemailer to send email confirmation codes.
 
 [Microblog Staging Demo](https://microblog-staging.fly.dev/)
+
+Not all "Popular Microblogging Site" features are duplicated, but currently here's what should work:
+
+- Creating accounts and sending verification emails
+- Deleting accounts (and all their posts)
+- Creating posts
+- Deleting posts (and all it's likes)
+- Liking/unliking posts
+- Reposting/unreposting posts
+- Following/unfollowing users
+- Verifying users
+- Replying to posts
+- Seeing replies to a post
+- Seeing list of people who liked a post
+- Seeing list of people who reposted a post
+- Seeing a list of users followings
+- Seeing a list of users followers
+- Updating profile info (name, bio, website, avatar url, cover url, etc)
+- Automatic dark/light mode support
+- Somewhat reasonable responsiveness
+- Most if not all features work with JavaScript disabled
 
 ## Development
 
