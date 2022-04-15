@@ -1,5 +1,9 @@
 # Microblog
 
+No guarantees that any of this works. I'm new at this and experimenting. Built on top of [Remix's](https://remix.run/) Indie Stack. Uses Nodemailer to send confirmation codes to email. Database query organisation might be a hot mess.
+
+[Microblog Staging Demo](https://microblog-staging.fly.dev/)
+
 ## Development
 
 - Initial setup:
@@ -14,6 +18,14 @@
   npm run dev
   ```
 
+  - Delete and reset database:
+
+  ```sh
+  rm prisma/data.db
+  npx prisma db push
+  npx prisma db seed
+  ```
+
 This starts your app in development mode, rebuilding assets on file changes.
 
 The database seed script creates a few new users with some data you can use to get started:
@@ -23,6 +35,17 @@ Users:
 - Saul: `saul@email.com / password`
 - Mike: `mike@email.com / password`
 - Lalo: `lalo@email.com / password`
+
+## ENV
+
+Create .env file with
+
+```
+DATABASE_URL="file:./data.db?connection_limit=1"
+SESSION_SECRET="some-random-secret"
+GMAIL_EMAIL="your@gmail.com"
+GMAIL_PASSWORD="your-gmail-password"
+```
 
 ## Deployment
 
