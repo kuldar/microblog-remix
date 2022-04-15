@@ -83,12 +83,16 @@ export function getPostReplies({ id, userId }) {
         id: true,
         body: true,
         createdAt: true,
-        author: true,
+        author: {
+          select: { username: true, name: true, avatarUrl: true, status: true },
+        },
         likes: {
           where: { userId },
           select: { createdAt: true },
         },
-        replyTo: { select: { id: true, author: true } },
+        replyTo: {
+          select: { id: true, author: { name: true, username: true } },
+        },
         isReply: true,
         isRepost: true,
         reposts: {
@@ -106,7 +110,15 @@ export function getPostReplies({ id, userId }) {
         id: true,
         body: true,
         createdAt: true,
-        author: true,
+        author: {
+          select: { username: true, name: true, avatarUrl: true, status: true },
+        },
+        replyTo: {
+          select: {
+            id: true,
+            author: { select: { name: true, username: true } },
+          },
+        },
         isReply: true,
         isRepost: true,
         _count: { select: { likes: true, reposts: true, replies: true } },
