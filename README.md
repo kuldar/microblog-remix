@@ -2,9 +2,12 @@
 
 No guarantees that any of this works. I'm new at this and experimenting. Built on top of [Remix's](https://remix.run/) Indie Stack. Database query organisation might be a hot mess. Uses Nodemailer to send email confirmation codes.
 
-[Microblog Staging Demo](https://microblog-staging.fly.dev/)
+👉 **[Microblog Staging Demo]**(https://microblog-staging.fly.dev/)
 
-Not all "Popular Microblogging Site" features are duplicated, but currently here's what should work:
+![Screenshot 2022-04-17 at 13 11 57](https://user-images.githubusercontent.com/1710629/163710101-c837af81-608a-47e8-9829-bb7182180f10.png)
+
+## Features
+Not all "Popular Microblogging Site" features are replicated, but here's what currently should work:
 
 - Creating accounts and sending verification emails
 - Deleting accounts (and all their posts)
@@ -13,7 +16,7 @@ Not all "Popular Microblogging Site" features are duplicated, but currently here
 - Liking/unliking posts
 - Reposting/unreposting posts
 - Following/unfollowing users
-- Verifying users
+- Verification badges for users
 - Replying to posts
 - Seeing replies to a post
 - Seeing list of people who liked a post
