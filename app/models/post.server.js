@@ -91,7 +91,7 @@ export function getPostReplies({ id, userId }) {
           select: { createdAt: true },
         },
         replyTo: {
-          select: { id: true, author: { name: true, username: true } },
+          select: { id: true, author: { select: { name: true, username: true } } },
         },
         isReply: true,
         isRepost: true,
