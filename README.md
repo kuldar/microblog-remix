@@ -2,7 +2,7 @@
 
 No guarantees that any of this works. I'm new at this and experimenting. Built on top of [Remix's](https://remix.run/) Indie Stack. Database query organisation might be a hot mess. Uses Nodemailer to send email confirmation codes.
 
-👉 **[Microblog Staging Demo]**(https://microblog-staging.fly.dev/)
+👉 **[Microblog Staging Demo](https://microblog-staging.fly.dev/)**
 
 ![Screenshot 2022-04-17 at 13 11 57](https://user-images.githubusercontent.com/1710629/163710101-c837af81-608a-47e8-9829-bb7182180f10.png)
 
