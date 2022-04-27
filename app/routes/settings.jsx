@@ -120,7 +120,7 @@ export default function SettingsPage() {
           encType="multipart/form-data"
           className=""
         >
-          <div className="p-4 border-b border-gray-200">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-800">
             <div className="flex items-center space-x-3">
               {user.avatarUrl ? (
                 <img
@@ -157,7 +157,7 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="p-4 space-y-2 border-b border-gray-200">
+          <div className="p-4 space-y-2 border-b border-gray-200 dark:border-gray-800">
             <span className="font-semibold">Cover</span>
             {user.coverUrl && (
               <img
