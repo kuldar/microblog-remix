@@ -24,6 +24,7 @@ Not all "Popular Microblogging Site" features are replicated, but here's what cu
 - Seeing a list of users followings
 - Seeing a list of users followers
 - Updating profile info (name, bio, website, avatar url, cover url, etc)
+- Uploading images to Cloudinary
 - Automatic dark/light mode support
 - Somewhat reasonable responsiveness
 - Most if not all features work with JavaScript disabled
@@ -69,6 +70,9 @@ DATABASE_URL="file:./data.db?connection_limit=1"
 SESSION_SECRET="some-random-secret"
 GMAIL_EMAIL="your@gmail.com"
 GMAIL_PASSWORD="your-gmail-password"
+CLOUDINARY_NAME="account-name"
+CLOUDINARY_API_KEY="api-key"
+CLOUDINARY_API_SECRET="super-duper-secret"
 ```
 
 ## Deployment
@@ -108,11 +112,12 @@ Prior to your first deployment, you'll need to do a few things:
 
 - Add a `FLY_API_TOKEN` to your GitHub repo. To do this, go to your user settings on Fly and create a new [token](https://web.fly.io/user/personal_access_tokens/new), then add it to [your repo secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) with the name `FLY_API_TOKEN`.
 
-- Add a `SESSION_SECRET` to your fly app secrets, to do this you can run the following commands:
+- Add a all the ENV variables to your fly app secrets, to do this you can run the following commands:
 
   ```sh
-  fly secrets set SESSION_SECRET=$(openssl rand -hex 32) --app microblog
-  fly secrets set SESSION_SECRET=$(openssl rand -hex 32) --app microblog-staging
+  fly secrets set SESSION_SECRET=$(openssl rand -hex 32) GMAIL_EMAIL="your@gmail.com" GMAIL_PASSWORD="your-gmail-password" CLOUDINARY_NAME="account-name" CLOUDINARY_API_KEY="api-key" CLOUDINARY_API_SECRET="super-duper-secret" --app microblog
+  
+  fly secrets set SESSION_SECRET=$(openssl rand -hex 32) GMAIL_EMAIL="your@gmail.com" GMAIL_PASSWORD="your-gmail-password" CLOUDINARY_NAME="account-name" CLOUDINARY_API_KEY="api-key" CLOUDINARY_API_SECRET="super-duper-secret" --app microblog-staging
   ```
 
   If you don't have openssl installed, you can also use [1password](https://1password.com/generate-password) to generate a random secret, just replace `$(openssl rand -hex 32)` with the generated secret.
@@ -129,6 +134,12 @@ Now that everything is set up you can commit and push your changes to your repo.
 ### Connecting to your database
 
 The sqlite database lives at `/data/sqlite.db` in your deployed application. You can connect to the live database by running `fly ssh console -C database-cli`.
+
+### Cloudinary
+Create two upload presets on Cloudinary - "avatar" and "cover"
+
+<img width="471" alt="Screenshot 2022-04-27 at 14 08 07" src="https://user-images.githubusercontent.com/1710629/165505792-7ceac54f-238c-4366-874d-95632d7d8cb3.png">
+
 
 ## GitHub Actions
 
